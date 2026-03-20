@@ -6,13 +6,7 @@
   <title>SkyFlip - Bazaar Flipper</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #1a1a1a;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', sans-serif;
-      font-size: 14px;
-    }
+    body { background: #1a1a1a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
 
     header {
       background: #111;
@@ -22,7 +16,6 @@
       align-items: center;
       gap: 20px;
     }
-
     header h1 { font-size: 20px; color: #4fc3f7; }
 
     .controls {
@@ -34,342 +27,201 @@
       gap: 12px;
       align-items: center;
     }
-
     .controls label { color: #aaa; font-size: 13px; }
-
     .controls input, .controls select {
-      background: #333;
-      border: 1px solid #444;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 13px;
-      width: 110px;
+      background: #333; border: 1px solid #444; color: #fff;
+      padding: 5px 10px; border-radius: 4px; font-size: 13px; width: 110px;
     }
-
     .controls button {
-      background: #4fc3f7;
-      color: #111;
-      border: none;
-      padding: 6px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 13px;
+      background: #4fc3f7; color: #111; border: none;
+      padding: 6px 16px; border-radius: 4px; cursor: pointer;
+      font-weight: bold; font-size: 13px;
     }
-
     .controls button:hover { background: #81d4fa; }
     .controls button:disabled { background: #444; color: #777; cursor: not-allowed; }
 
     .btn-cart-open {
-      background: #333 !important;
-      color: #e0e0e0 !important;
-      border: 1px solid #555 !important;
-      position: relative;
+      background: #333 !important; color: #e0e0e0 !important;
+      border: 1px solid #555 !important; position: relative;
     }
     .btn-cart-open:hover { background: #444 !important; }
-
     .cart-badge {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: #ef5350;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      border-radius: 999px;
-      padding: 1px 5px;
-      min-width: 16px;
-      text-align: center;
-      display: none;
+      position: absolute; top: -6px; right: -6px;
+      background: #ef5350; color: #fff; font-size: 10px; font-weight: bold;
+      border-radius: 999px; padding: 1px 5px; min-width: 16px;
+      text-align: center; display: none;
     }
 
     .status-bar {
-      padding: 5px 20px;
-      background: #1e1e1e;
-      font-size: 12px;
-      color: #666;
-      border-bottom: 1px solid #2a2a2a;
-      display: flex;
-      gap: 24px;
+      padding: 5px 20px; background: #1e1e1e; font-size: 12px;
+      color: #666; border-bottom: 1px solid #2a2a2a;
+      display: flex; gap: 24px; align-items: center;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #66bb6a; display: inline-block;
+      animation: pulse 1.5s infinite;
+      margin-right: 4px;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
     }
 
     #error-box {
-      background: #2d1010;
-      border: 1px solid #7f1d1d;
-      color: #fca5a5;
-      padding: 10px 20px;
-      margin: 12px 20px 0;
-      border-radius: 4px;
-      display: none;
+      background: #2d1010; border: 1px solid #7f1d1d; color: #fca5a5;
+      padding: 10px 20px; margin: 12px 20px 0; border-radius: 4px; display: none;
     }
+    #loading { text-align: center; padding: 60px; color: #555; }
 
-    #loading {
-      text-align: center;
-      padding: 60px;
-      color: #555;
-    }
-
-    /* CARDS GRID */
+    /* CARDS */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
-      padding: 16px 20px;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 14px; padding: 16px 20px;
     }
 
     .card {
-      background: #252525;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 16px 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      position: relative;
-      transition: border-color 0.15s;
+      background: #252525; border: 1px solid #333; border-radius: 8px;
+      padding: 14px 14px 12px; display: flex; flex-direction: column;
+      align-items: center; gap: 5px; position: relative; transition: border-color 0.15s;
     }
-
     .card:hover { border-color: #555; }
+    .card.in-cart { border-color: #4fc3f7; }
 
     .card-add-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #333;
-      border: 1px solid #555;
-      color: #aaa;
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute; top: 8px; right: 8px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #333; border: 1px solid #555; color: #aaa;
+      font-size: 18px; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
       transition: background 0.1s, color 0.1s;
     }
-
     .card-add-btn:hover { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
+    .card.in-cart .card-add-btn { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
 
-    .card-img {
-      width: 56px;
-      height: 56px;
-      image-rendering: pixelated;
-      object-fit: contain;
-    }
-
+    .card-img { width: 52px; height: 52px; image-rendering: pixelated; object-fit: contain; }
     .card-img-placeholder {
-      width: 56px;
-      height: 56px;
-      background: #333;
-      border-radius: 6px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+      width: 52px; height: 52px; background: #333; border-radius: 6px;
+      display: none; align-items: center; justify-content: center; font-size: 20px;
     }
+    .card-name { font-weight: 700; font-size: 13px; color: #fff; text-align: center; line-height: 1.3; }
 
-    .card-name {
-      font-weight: 700;
-      font-size: 13px;
-      color: #fff;
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    .card-divider {
-      width: 100%;
-      height: 1px;
-      background: #333;
-      margin: 4px 0;
-    }
+    .card-divider { width: 100%; height: 1px; background: #333; margin: 3px 0; }
 
     .card-row {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: #aaa;
+      width: 100%; display: flex; justify-content: space-between;
+      font-size: 12px; color: #aaa;
     }
-
     .card-row span:last-child { color: #e0e0e0; font-weight: 500; }
 
-    .card-profit {
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 700;
+    /* Risk badge */
+    .risk-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+      margin-top: 2px;
     }
+    .risk-low  { background: #1b4332; color: #6ee7b7; }
+    .risk-med  { background: #451a03; color: #fbbf24; }
+    .risk-high { background: #450a0a; color: #fca5a5; }
 
-    .pos { color: #66bb6a; }
-    .neg { color: #ef5350; }
+    /* Volume mini bars */
+    .vol-bars { width: 100%; display: flex; flex-direction: column; gap: 3px; margin: 2px 0; }
+    .vol-bar-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #aaa; }
+    .vol-bar-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+    .vol-bar-fill  { height: 100%; border-radius: 2px; transition: width 0.3s; }
+    .vol-bar-val   { width: 38px; text-align: right; color: #888; font-size: 11px; }
+
+    /* Profit breakdown */
+    .profit-row {
+      width: 100%; display: flex; justify-content: space-between;
+      font-size: 12px; margin-top: 2px;
+    }
+    .card-profit { font-size: 13px; font-weight: 700; margin-top: 4px; }
+
+    .pos  { color: #66bb6a; }
+    .neg  { color: #ef5350; }
     .warn { color: #ffa726; }
+    .neu  { color: #888; }
 
-    #empty-msg {
-      text-align: center;
-      padding: 50px;
-      color: #444;
-    }
+    #empty-msg { text-align: center; padding: 50px; color: #444; }
 
-    /* ===== CARRINHO / MODAL ===== */
+    /* ===== CART PANEL ===== */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 100;
-      align-items: flex-start;
-      justify-content: flex-end;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 100;
+      align-items: flex-start; justify-content: flex-end;
     }
-
     .modal-overlay.open { display: flex; }
 
     .cart-panel {
-      background: #1e1e1e;
-      border-left: 1px solid #333;
-      width: 420px;
-      max-width: 100vw;
-      height: 100vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+      background: #1e1e1e; border-left: 1px solid #333;
+      width: 440px; max-width: 100vw; height: 100vh;
+      overflow-y: auto; display: flex; flex-direction: column;
     }
-
     .cart-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #333;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid #333;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: #1e1e1e; z-index: 1;
     }
-
     .cart-header h2 { font-size: 16px; color: #fff; }
-
-    .cart-close {
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 22px;
-      cursor: pointer;
-      line-height: 1;
-    }
-
+    .cart-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; }
     .cart-close:hover { color: #fff; }
 
-    .cart-body { flex: 1; padding: 12px 20px; display: flex; flex-direction: column; gap: 12px; }
-
-    .cart-empty { color: #555; text-align: center; padding: 40px 0; }
+    .cart-body { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 14px; }
+    .cart-empty { color: #555; text-align: center; padding: 40px 0; line-height: 1.8; }
 
     .cart-item {
-      background: #252525;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      background: #252525; border: 1px solid #333; border-radius: 8px;
+      padding: 12px; display: flex; flex-direction: column; gap: 10px;
     }
-
-    .cart-item-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .cart-item-img {
-      width: 36px;
-      height: 36px;
-      image-rendering: pixelated;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .cart-item-name {
-      font-weight: 700;
-      font-size: 13px;
-      color: #fff;
-      flex: 1;
-    }
-
-    .cart-item-remove {
-      background: none;
-      border: none;
-      color: #666;
-      font-size: 18px;
-      cursor: pointer;
-      line-height: 1;
-    }
-
+    .cart-item-header { display: flex; align-items: center; gap: 10px; }
+    .cart-item-img { width: 34px; height: 34px; image-rendering: pixelated; object-fit: contain; flex-shrink: 0; }
+    .cart-item-name { font-weight: 700; font-size: 13px; color: #fff; flex: 1; }
+    .cart-item-remove { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; }
     .cart-item-remove:hover { color: #ef5350; }
 
-    .cart-item-fields {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-
-    .cart-field label {
-      display: block;
-      font-size: 11px;
-      color: #888;
-      margin-bottom: 2px;
-    }
-
+    /* big number inputs */
+    .cart-item-fields { display: flex; flex-direction: column; gap: 8px; }
+    .cart-field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cart-field { display: flex; flex-direction: column; gap: 3px; }
+    .cart-field label { font-size: 11px; color: #888; }
     .cart-field input {
-      width: 100%;
-      background: #333;
-      border: 1px solid #444;
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+      background: #2e2e2e; border: 1px solid #444; color: #fff;
+      padding: 7px 10px; border-radius: 5px; font-size: 14px;
+      font-weight: 600; width: 100%;
     }
-
-    .cart-field input:focus { outline: none; border-color: #4fc3f7; }
+    .cart-field input:focus { outline: none; border-color: #4fc3f7; background: #333; }
+    .cart-field input[readonly] { color: #666; cursor: default; background: #222; }
+    .cart-field input.big {
+      font-size: 16px; padding: 9px 12px; text-align: right;
+    }
 
     .cart-item-result {
-      font-size: 12px;
-      color: #aaa;
-      border-top: 1px solid #333;
-      padding-top: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      border-top: 1px solid #333; padding-top: 8px;
+      display: flex; flex-direction: column; gap: 4px;
     }
-
-    .cart-item-result span { display: flex; justify-content: space-between; }
-    .cart-item-result b { color: #e0e0e0; }
+    .result-row {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: #888;
+    }
+    .result-row b { color: #e0e0e0; }
+    .result-row.profit b { font-size: 14px; }
 
     .cart-footer {
-      padding: 16px 20px;
-      border-top: 1px solid #333;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      padding: 14px 16px; border-top: 1px solid #333;
+      display: flex; flex-direction: column; gap: 8px;
+      position: sticky; bottom: 0; background: #1e1e1e;
     }
-
     .cart-total {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
+      font-size: 15px; font-weight: 700;
+      display: flex; justify-content: space-between;
     }
-
     .btn-clear {
-      background: #2d1010 !important;
-      color: #ef9a9a !important;
-      border: 1px solid #7f1d1d !important;
-      width: 100%;
-      padding: 8px !important;
+      background: #2d1010 !important; color: #ef9a9a !important;
+      border: 1px solid #7f1d1d !important; width: 100%; padding: 8px !important;
+      border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold;
     }
-
     .btn-clear:hover { background: #3d1515 !important; }
-
-    /* adicionado ao carrinho: brilho no card */
-    .card.in-cart { border-color: #4fc3f7; }
-    .card.in-cart .card-add-btn { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
   </style>
 </head>
 <body>
@@ -389,12 +241,12 @@
   <input type="number" id="filter-profit" value="1000" min="0" step="500" style="width:130px" />
 
   <label>Ordenar por:</label>
-  <select id="sort-key" style="width:140px">
+  <select id="sort-key" style="width:150px">
     <option value="profit_hour">Lucro/hora</option>
     <option value="margin_pct">Margem %</option>
     <option value="margin_coins">Margem (coins)</option>
     <option value="volume">Vol. compra/h</option>
-    <option value="buy_price">Preço compra</option>
+    <option value="risk_score">Menor risco</option>
   </select>
 
   <button id="btn-apply">Aplicar</button>
@@ -406,7 +258,8 @@
 </div>
 
 <div class="status-bar">
-  <div id="count-info">Carregando...</div>
+  <div><span class="live-dot"></span><span id="live-label">Conectando...</span></div>
+  <div id="count-info"></div>
   <div id="timer-info"></div>
 </div>
 
@@ -415,22 +268,20 @@
 <div id="empty-msg" style="display:none">Nenhum flip encontrado com esses filtros.</div>
 <div class="cards-grid" id="cards"></div>
 
-<!-- CARRINHO MODAL -->
+<!-- CART -->
 <div class="modal-overlay" id="cart-modal">
   <div class="cart-panel">
     <div class="cart-header">
       <h2>🛒 Meus Flips</h2>
       <button class="cart-close" id="btn-cart-close">✕</button>
     </div>
-    <div class="cart-body" id="cart-body">
-      <div class="cart-empty">Nenhum flip salvo ainda.<br>Clique no + em um item para adicionar.</div>
-    </div>
+    <div class="cart-body" id="cart-body"></div>
     <div class="cart-footer">
       <div class="cart-total">
-        <span>Lucro total estimado:</span>
-        <span class="pos" id="cart-total">0 coins</span>
+        <span>Lucro total:</span>
+        <span id="cart-total" class="pos">0 coins</span>
       </div>
-      <button class="controls button btn-clear" id="btn-clear-cart">Limpar tudo</button>
+      <button class="btn-clear" id="btn-clear-cart">🗑 Limpar tudo</button>
     </div>
   </div>
 </div>
@@ -438,41 +289,26 @@
 <script>
   const PROXY       = '/api/bazaar';
   const REFRESH_SEC = 60;
-  const IMG_BASE    = 'https://sky.coflnet.com/static/icon/';
+  const IMG         = 'https://sky.coflnet.com/static/icon/';
 
-  let rawData = null;
-  let sortCol = 'profit_hour';
-  let sortAsc  = false;
-  let timerInterval  = null;
-  let refreshTimeout = null;
-  let nextAt = 0;
-
-  // cart: { [id]: { flip, qty, boughtAt, soldAt } }
+  let rawData = null, sortCol = 'profit_hour', sortAsc = false;
+  let timerInterval = null, refreshTimeout = null, nextAt = 0;
   let cart = JSON.parse(localStorage.getItem('skyflip_cart') || '{}');
 
-  // ---- Format helpers ----
-  function fmt(n) {
+  // ---- format ----
+  const fmt = n => {
     if (n == null || isNaN(n)) return '-';
     const a = Math.abs(n);
-    if (a >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-    if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-    if (a >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    if (a >= 1e9) return (n/1e9).toFixed(2)+'B';
+    if (a >= 1e6) return (n/1e6).toFixed(2)+'M';
+    if (a >= 1e3) return (n/1e3).toFixed(1)+'K';
     return n.toFixed(0);
-  }
-
-  function fmtFull(n) {
-    if (n == null || isNaN(n)) return '-';
-    return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-  }
-
-  function fmtPct(n) {
-    return isNaN(n) ? '-' : n.toFixed(2) + '%';
-  }
-
-  function fmtCoins(n) {
-    if (n == null || isNaN(n)) return '-';
-    return n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' coins';
-  }
+  };
+  const fmtFull = n => n == null || isNaN(n) ? '-' :
+    n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  const fmtCoins = n => n == null || isNaN(n) ? '-' :
+    n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' coins';
+  const fmtPct   = n => isNaN(n) ? '-' : n.toFixed(2) + '%';
 
   // ---- API ----
   async function fetchData() {
@@ -486,36 +322,49 @@
   // ---- Calc flips ----
   function calcFlips(data) {
     const TAX = 0.9875;
-    const flips = [];
-    for (const [id, p] of Object.entries(data.products)) {
+    return Object.entries(data.products).map(([id, p]) => {
       const qs = p.quick_status;
-      if (!qs) continue;
-      const instaBuyPrice  = qs.sellPrice;
-      const instaSellPrice = qs.buyPrice;
-      if (!instaBuyPrice || !instaSellPrice || instaBuyPrice <= 0 || instaSellPrice <= 0) continue;
-      const effectiveSell = instaSellPrice * TAX;
-      const marginCoins   = effectiveSell - instaBuyPrice;
-      const marginPct     = (marginCoins / instaBuyPrice) * 100;
-      const buyVol  = qs.buyMovingWeek  / 7 / 24;
-      const sellVol = qs.sellMovingWeek / 7 / 24;
-      const profitHour = marginCoins * Math.min(buyVol, sellVol);
-      flips.push({
-        id,
-        name: id.replace(/_/g, ' '),
-        buy_price:    instaBuyPrice,
-        sell_price:   instaSellPrice,
-        margin_coins: marginCoins,
-        margin_pct:   marginPct,
-        volume:       buyVol,
-        sell_volume:  sellVol,
-        instabuys:    qs.buyMovingWeek,
-        instasells:   qs.sellMovingWeek,
-        supply:       qs.sellVolume,
-        demand:       qs.buyVolume,
-        profit_hour:  profitHour,
-      });
-    }
-    return flips;
+      if (!qs) return null;
+
+      const buyPrice  = qs.sellPrice;   // o que você paga (instabuy)
+      const sellPrice = qs.buyPrice;    // o que você recebe (instasell)
+      if (!buyPrice || !sellPrice || buyPrice <= 0 || sellPrice <= 0) return null;
+
+      const effectiveSell = sellPrice * TAX;
+      const marginCoins   = effectiveSell - buyPrice;
+      const marginPct     = (marginCoins / buyPrice) * 100;
+
+      const buyVolH  = qs.buyMovingWeek  / 7 / 24;
+      const sellVolH = qs.sellMovingWeek / 7 / 24;
+      const buyVolD  = qs.buyMovingWeek  / 7;
+      const sellVolD = qs.sellMovingWeek / 7;
+
+      const profitHour = marginCoins * Math.min(buyVolH, sellVolH);
+
+      // ---- Risk score (0=safe, 100=risky) ----
+      // Fatores: spread alto = risco, volume baixo = risco, margem alta demais = manipulação
+      const spreadRatio  = Math.abs(sellPrice - buyPrice) / buyPrice; // quanto maior, mais risco
+      const volScore     = Math.min(buyVolH, sellVolH);                // volume mínimo
+      const volRisk      = volScore < 5 ? 60 : volScore < 50 ? 30 : 10;
+      const spreadRisk   = spreadRatio > 0.5 ? 60 : spreadRatio > 0.2 ? 30 : 10;
+      const marginRisk   = marginPct > 100 ? 50 : marginPct > 30 ? 20 : 0; // margem absurda = manipulação
+      const riskScore    = Math.min(100, Math.round((volRisk + spreadRisk + marginRisk) / 3));
+      const riskLabel    = riskScore <= 30 ? 'Baixo' : riskScore <= 60 ? 'Médio' : 'Alto';
+      const riskClass    = riskScore <= 30 ? 'risk-low' : riskScore <= 60 ? 'risk-med' : 'risk-high';
+
+      return {
+        id, name: id.replace(/_/g, ' '),
+        buy_price: buyPrice, sell_price: sellPrice,
+        effective_sell: effectiveSell,
+        margin_coins: marginCoins, margin_pct: marginPct,
+        buy_vol_h: buyVolH, sell_vol_h: sellVolH,
+        buy_vol_d: buyVolD, sell_vol_d: sellVolD,
+        supply: qs.sellVolume, demand: qs.buyVolume,
+        instabuys: qs.buyMovingWeek, instasells: qs.sellMovingWeek,
+        profit_hour: profitHour,
+        risk_score: riskScore, risk_label: riskLabel, risk_class: riskClass,
+      };
+    }).filter(Boolean);
   }
 
   function process(flips) {
@@ -523,9 +372,11 @@
     const minVol    = parseFloat(document.getElementById('filter-volume').value) || 0;
     const minProfit = parseFloat(document.getElementById('filter-profit').value) || 0;
     return flips
-      .filter(f => f.margin_pct >= minPct && f.volume >= minVol && f.profit_hour >= minProfit)
+      .filter(f => f.margin_pct >= minPct && f.buy_vol_h >= minVol && f.profit_hour >= minProfit)
       .sort((a, b) => {
         const va = a[sortCol] ?? 0, vb = b[sortCol] ?? 0;
+        // risk_score: menor = melhor, então inverte
+        if (sortCol === 'risk_score') return sortAsc ? vb - va : va - vb;
         return sortAsc ? va - vb : vb - va;
       });
   }
@@ -537,235 +388,237 @@
     const result = process(all);
 
     document.getElementById('count-info').textContent =
-      `Mostrando ${result.length} flips de ${all.length} itens`;
+      `${result.length} flips de ${all.length} itens`;
 
-    const grid     = document.getElementById('cards');
-    const emptyMsg = document.getElementById('empty-msg');
+    const grid = document.getElementById('cards');
+    document.getElementById('empty-msg').style.display = result.length ? 'none' : 'block';
+    if (!result.length) { grid.innerHTML = ''; return; }
 
-    if (result.length === 0) {
-      grid.innerHTML = '';
-      emptyMsg.style.display = 'block';
-      return;
-    }
-    emptyMsg.style.display = 'none';
+    // max volumes para normalizar barras
+    const maxVolH = Math.max(...result.map(f => Math.max(f.buy_vol_h, f.sell_vol_h)), 1);
 
-    const mClass = pct => pct >= 5 ? 'pos' : pct >= 2 ? 'warn' : 'neg';
-    const pClass = v   => v >= 0 ? 'pos' : 'neg';
+    const mClass = p => p >= 5 ? 'pos' : p >= 2 ? 'warn' : 'neg';
+    const pClass = v => v >= 0 ? 'pos' : 'neg';
 
     grid.innerHTML = result.map(f => {
       const inCart = !!cart[f.id];
+      const buyBarW  = Math.round((f.buy_vol_h  / maxVolH) * 100);
+      const sellBarW = Math.round((f.sell_vol_h / maxVolH) * 100);
+
       return `
       <div class="card${inCart ? ' in-cart' : ''}" data-id="${f.id}">
-        <button class="card-add-btn" data-id="${f.id}" title="${inCart ? 'Já no carrinho' : 'Adicionar ao carrinho'}">
+        <button class="card-add-btn" data-id="${f.id}" title="${inCart ? 'Ver no carrinho' : 'Adicionar ao carrinho'}">
           ${inCart ? '✓' : '+'}
         </button>
-        <img
-          class="card-img"
-          src="${IMG_BASE}${encodeURIComponent(f.id)}/vanilla"
-          alt="${f.name}"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-        />
+
+        <img class="card-img"
+          src="${IMG}${encodeURIComponent(f.id)}/vanilla" alt="${f.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
         <div class="card-img-placeholder">📦</div>
+
         <div class="card-name">${f.name}</div>
+
+        <span class="risk-badge ${f.risk_class}">
+          ${f.risk_score <= 30 ? '🛡' : f.risk_score <= 60 ? '⚠️' : '🔴'} Risco ${f.risk_label}
+        </span>
+
         <div class="card-divider"></div>
-        <div class="card-row"><span>Buy Price:</span><span>${fmtFull(f.buy_price)} coins</span></div>
-        <div class="card-row"><span>Sell Price:</span><span>${fmtFull(f.sell_price)} coins</span></div>
-        <div class="card-row"><span>Supply:</span><span>${fmtFull(f.supply)}</span></div>
-        <div class="card-row"><span>Demand:</span><span>${fmtFull(f.demand)}</span></div>
-        <div class="card-row"><span>Instabuys:</span><span>${fmtFull(f.instabuys)}</span></div>
-        <div class="card-row"><span>Instasells:</span><span>${fmtFull(f.instasells)}</span></div>
-        <div class="card-divider"></div>
+
+        <div class="card-row"><span>Comprar por:</span><span>${fmtFull(f.buy_price)}</span></div>
+        <div class="card-row"><span>Vender por:</span><span>${fmtFull(f.sell_price)}</span></div>
         <div class="card-row">
           <span>Margem:</span>
-          <span class="${mClass(f.margin_pct)}">${fmtPct(f.margin_pct)}</span>
+          <span class="${mClass(f.margin_pct)}">${fmtPct(f.margin_pct)} (${fmt(f.margin_coins)} c)</span>
         </div>
+
+        <div class="card-divider"></div>
+
+        <div class="vol-bars">
+          <div class="vol-bar-row">
+            <span style="width:44px">Compra</span>
+            <div class="vol-bar-track">
+              <div class="vol-bar-fill" style="width:${buyBarW}%;background:#4fc3f7"></div>
+            </div>
+            <span class="vol-bar-val">${fmt(f.buy_vol_h)}/h</span>
+          </div>
+          <div class="vol-bar-row">
+            <span style="width:44px">Venda</span>
+            <div class="vol-bar-track">
+              <div class="vol-bar-fill" style="width:${sellBarW}%;background:#66bb6a"></div>
+            </div>
+            <span class="vol-bar-val">${fmt(f.sell_vol_h)}/h</span>
+          </div>
+        </div>
+        <div class="card-row neu" style="font-size:11px">
+          <span>${fmt(f.buy_vol_d)}/dia compra</span>
+          <span>${fmt(f.sell_vol_d)}/dia venda</span>
+        </div>
+
+        <div class="card-divider"></div>
         <div class="card-profit ${pClass(f.profit_hour)}">
           Lucro/h: ${fmt(f.profit_hour)} coins
         </div>
       </div>`;
     }).join('');
 
-    // bind + buttons
     grid.querySelectorAll('.card-add-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
+        const id   = btn.dataset.id;
         const flip = calcFlips(rawData).find(f => f.id === id);
         if (!flip) return;
-        if (cart[id]) {
-          // já está: abre o carrinho
-          openCart();
-        } else {
-          addToCart(flip);
-        }
+        cart[id] ? openCart() : addToCart(flip);
       });
     });
   }
 
-  // ---- Cart logic ----
-  function saveCart() {
-    localStorage.setItem('skyflip_cart', JSON.stringify(cart));
-  }
+  // ---- Cart ----
+  const saveCart = () => localStorage.setItem('skyflip_cart', JSON.stringify(cart));
 
   function addToCart(flip) {
     cart[flip.id] = {
-      id:        flip.id,
-      name:      flip.name,
-      buy_price: flip.buy_price,
-      sell_price: flip.sell_price,
-      qty:       1,
-      boughtAt:  flip.buy_price,
-      soldAt:    '',
+      id: flip.id, name: flip.name,
+      buy_price: flip.buy_price, sell_price: flip.sell_price,
+      qty: 1, boughtAt: parseFloat(flip.buy_price.toFixed(1)), soldAt: '',
     };
-    saveCart();
-    updateCartBadge();
-    renderCart();
-    // update card style sem re-render tudo
+    saveCart(); updateCartBadge(); renderCart();
     const card = document.querySelector(`.card[data-id="${flip.id}"]`);
     if (card) {
       card.classList.add('in-cart');
       const btn = card.querySelector('.card-add-btn');
-      btn.textContent = '✓';
-      btn.title = 'Já no carrinho';
+      btn.textContent = '✓'; btn.title = 'Ver no carrinho';
     }
     openCart();
   }
 
   function removeFromCart(id) {
-    delete cart[id];
-    saveCart();
-    updateCartBadge();
-    renderCart();
-    // update card style
+    delete cart[id]; saveCart(); updateCartBadge(); renderCart();
     const card = document.querySelector(`.card[data-id="${id}"]`);
     if (card) {
       card.classList.remove('in-cart');
       const btn = card.querySelector('.card-add-btn');
-      btn.textContent = '+';
-      btn.title = 'Adicionar ao carrinho';
+      btn.textContent = '+'; btn.title = 'Adicionar ao carrinho';
     }
   }
 
   function updateCartBadge() {
-    const count = Object.keys(cart).length;
-    const badge = document.getElementById('cart-badge');
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'block' : 'none';
+    const n = Object.keys(cart).length;
+    const b = document.getElementById('cart-badge');
+    b.textContent = n; b.style.display = n > 0 ? 'block' : 'none';
   }
 
-  function calcItemResult(entry) {
-    const qty      = parseFloat(entry.qty)      || 0;
-    const boughtAt = parseFloat(entry.boughtAt) || 0;
-    const soldAt   = parseFloat(entry.soldAt)   || 0;
-    const TAX      = 0.9875;
-    const spent    = boughtAt * qty;
-    const received = soldAt * TAX * qty;
+  function calcResult(e) {
+    const qty = parseFloat(e.qty) || 0;
+    const bought = parseFloat(e.boughtAt) || 0;
+    const sold   = parseFloat(e.soldAt)   || 0;
+    const spent    = bought * qty;
+    const received = sold * 0.9875 * qty;
     const profit   = received - spent;
     return { spent, received, profit };
   }
 
   function renderCart() {
-    const body  = document.getElementById('cart-body');
-    const total = document.getElementById('cart-total');
+    const body    = document.getElementById('cart-body');
+    const totEl   = document.getElementById('cart-total');
     const entries = Object.values(cart);
 
-    if (entries.length === 0) {
-      body.innerHTML = '<div class="cart-empty">Nenhum flip salvo ainda.<br>Clique no + em um item para adicionar.</div>';
-      total.textContent = '0 coins';
-      total.className = '';
+    if (!entries.length) {
+      body.innerHTML = '<div class="cart-empty">Nenhum flip salvo ainda.<br>Clique no <b>+</b> em um item para adicionar.</div>';
+      totEl.textContent = '0 coins'; totEl.className = '';
       return;
     }
 
     let totalProfit = 0;
 
-    body.innerHTML = entries.map(entry => {
-      const res = calcItemResult(entry);
-      totalProfit += res.profit;
-      const pClass = res.profit >= 0 ? 'pos' : 'neg';
-      const showResult = entry.soldAt !== '' && parseFloat(entry.soldAt) > 0;
+    body.innerHTML = entries.map(e => {
+      const res = calcResult(e);
+      totalProfit += isNaN(res.profit) ? 0 : res.profit;
+      const hasSold = e.soldAt !== '' && parseFloat(e.soldAt) > 0;
+      const pc = res.profit >= 0 ? 'pos' : 'neg';
 
       return `
-      <div class="cart-item" data-id="${entry.id}">
+      <div class="cart-item" data-id="${e.id}">
         <div class="cart-item-header">
           <img class="cart-item-img"
-            src="${IMG_BASE}${encodeURIComponent(entry.id)}/vanilla"
-            alt="${entry.name}"
-            onerror="this.style.display='none'"
-          />
-          <div class="cart-item-name">${entry.name}</div>
-          <button class="cart-item-remove" data-id="${entry.id}" title="Remover">✕</button>
+            src="${IMG}${encodeURIComponent(e.id)}/vanilla"
+            alt="${e.name}" onerror="this.style.display='none'" />
+          <div class="cart-item-name">${e.name}</div>
+          <button class="cart-item-remove" data-id="${e.id}">✕</button>
         </div>
 
         <div class="cart-item-fields">
-          <div class="cart-field">
-            <label>Qtd. comprada</label>
-            <input type="number" min="1" value="${entry.qty}" data-id="${entry.id}" data-field="qty" />
+          <div class="cart-field-group">
+            <div class="cart-field">
+              <label>Quantidade</label>
+              <input type="number" class="big" min="1" step="1"
+                value="${e.qty}" data-id="${e.id}" data-field="qty" />
+            </div>
+            <div class="cart-field">
+              <label>Preço atual</label>
+              <input type="number" class="big" value="${e.buy_price.toFixed(1)}" readonly />
+            </div>
           </div>
           <div class="cart-field">
-            <label>Preço que comprou</label>
-            <input type="number" min="0" step="0.1" value="${entry.boughtAt}" data-id="${entry.id}" data-field="boughtAt" />
+            <label>💰 Preço que COMPROU</label>
+            <input type="number" class="big" min="0" step="1"
+              value="${e.boughtAt}" data-id="${e.id}" data-field="boughtAt"
+              placeholder="0" />
           </div>
           <div class="cart-field">
-            <label>Preço que vendeu</label>
-            <input type="number" min="0" step="0.1" value="${entry.soldAt}" placeholder="Preencha ao vender" data-id="${entry.id}" data-field="soldAt" />
-          </div>
-          <div class="cart-field">
-            <label>Preço atual mercado</label>
-            <input type="number" value="${entry.buy_price.toFixed(1)}" readonly style="color:#888;cursor:default" />
+            <label>💵 Preço que VENDEU</label>
+            <input type="number" class="big" min="0" step="1"
+              value="${e.soldAt}" data-id="${e.id}" data-field="soldAt"
+              placeholder="Preencha ao vender..." />
           </div>
         </div>
 
-        ${showResult ? `
+        ${hasSold ? `
         <div class="cart-item-result">
-          <span><span>Gasto:</span><b>${fmtCoins(res.spent)}</b></span>
-          <span><span>Recebido (c/ tax):</span><b>${fmtCoins(res.received)}</b></span>
-          <span><span>Lucro:</span><b class="${pClass}">${fmtCoins(res.profit)}</b></span>
+          <div class="result-row"><span>Gasto total:</span><b>${fmtCoins(res.spent)}</b></div>
+          <div class="result-row"><span>Recebido (c/ tax 1.25%):</span><b>${fmtCoins(res.received)}</b></div>
+          <div class="result-row profit"><span>Lucro:</span><b class="${pc}">${fmtCoins(res.profit)}</b></div>
         </div>` : ''}
       </div>`;
     }).join('');
 
-    // bind remove buttons
-    body.querySelectorAll('.cart-item-remove').forEach(btn => {
-      btn.addEventListener('click', () => removeFromCart(btn.dataset.id));
-    });
+    body.querySelectorAll('.cart-item-remove').forEach(btn =>
+      btn.addEventListener('click', () => removeFromCart(btn.dataset.id))
+    );
 
-    // bind field inputs
-    body.querySelectorAll('.cart-item-fields input:not([readonly])').forEach(input => {
+    body.querySelectorAll('input[data-field]').forEach(input => {
+      input.addEventListener('change', () => {
+        cart[input.dataset.id][input.dataset.field] = input.value;
+        saveCart(); renderCart();
+      });
+      // não re-render no input para não perder o foco, só salva
       input.addEventListener('input', () => {
-        const id    = input.dataset.id;
-        const field = input.dataset.field;
-        cart[id][field] = input.value;
+        cart[input.dataset.id][input.dataset.field] = input.value;
         saveCart();
-        // re-render só o resultado sem recriar tudo
-        renderCart();
       });
     });
 
-    // total
-    total.textContent = fmtCoins(totalProfit);
-    total.className = totalProfit >= 0 ? 'pos' : 'neg';
+    totEl.textContent = fmtCoins(totalProfit);
+    totEl.className   = totalProfit >= 0 ? 'pos' : 'neg';
   }
 
-  function openCart() {
-    document.getElementById('cart-modal').classList.add('open');
-    renderCart();
-  }
-
-  function closeCart() {
-    document.getElementById('cart-modal').classList.remove('open');
-  }
+  const openCart  = () => { document.getElementById('cart-modal').classList.add('open'); renderCart(); };
+  const closeCart = () => document.getElementById('cart-modal').classList.remove('open');
 
   // ---- Load ----
   async function load() {
     hideError();
     document.getElementById('btn-refresh').disabled = true;
+    document.getElementById('live-label').textContent = 'Atualizando...';
     try {
       rawData = await fetchData();
       document.getElementById('loading').style.display = 'none';
+      document.getElementById('live-label').textContent =
+        'Live • atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       render();
       scheduleRefresh();
     } catch (e) {
       showError('Erro: ' + e.message);
       document.getElementById('loading').style.display = 'none';
+      document.getElementById('live-label').textContent = 'Erro na atualização';
     } finally {
       document.getElementById('btn-refresh').disabled = false;
     }
@@ -777,20 +630,15 @@
     nextAt = Date.now() + REFRESH_SEC * 1000;
     timerInterval = setInterval(() => {
       const s = Math.max(0, Math.round((nextAt - Date.now()) / 1000));
-      document.getElementById('timer-info').textContent = `Próxima atualização em ${s}s`;
+      document.getElementById('timer-info').textContent = `Próx. atualização em ${s}s`;
     }, 1000);
-    refreshTimeout = setTimeout(() => {
-      clearInterval(timerInterval);
-      load();
-    }, REFRESH_SEC * 1000);
+    refreshTimeout = setTimeout(() => { clearInterval(timerInterval); load(); }, REFRESH_SEC * 1000);
   }
 
-  function hideError() { document.getElementById('error-box').style.display = 'none'; }
+  const hideError = () => { document.getElementById('error-box').style.display = 'none'; };
   function showError(msg) {
-    const box = document.getElementById('error-box');
-    box.textContent = msg;
-    box.style.display = 'block';
-    console.error('[SkyFlip]', msg);
+    const b = document.getElementById('error-box');
+    b.textContent = msg; b.style.display = 'block';
   }
 
   // ---- Events ----
@@ -798,26 +646,17 @@
   document.getElementById('btn-refresh').addEventListener('click', load);
   document.getElementById('btn-cart').addEventListener('click', openCart);
   document.getElementById('btn-cart-close').addEventListener('click', closeCart);
-  document.getElementById('btn-clear-cart').addEventListener('click', () => {
-    if (!confirm('Limpar todos os flips salvos?')) return;
-    cart = {};
-    saveCart();
-    updateCartBadge();
-    renderCart();
-    render();
-  });
-
   document.getElementById('cart-modal').addEventListener('click', e => {
     if (e.target === document.getElementById('cart-modal')) closeCart();
   });
-
+  document.getElementById('btn-clear-cart').addEventListener('click', () => {
+    if (!confirm('Limpar todos os flips salvos?')) return;
+    cart = {}; saveCart(); updateCartBadge(); renderCart(); render();
+  });
   document.getElementById('sort-key').addEventListener('change', e => {
-    sortCol = e.target.value;
-    sortAsc = false;
-    render();
+    sortCol = e.target.value; sortAsc = false; render();
   });
 
-  // init
   updateCartBadge();
   load();
 </script>
