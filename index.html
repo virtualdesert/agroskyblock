@@ -8,220 +8,182 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #1a1a1a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
 
-    header {
-      background: #111;
-      padding: 12px 20px;
-      border-bottom: 1px solid #333;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+    header { background: #111; padding: 12px 20px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 16px; }
     header h1 { font-size: 20px; color: #4fc3f7; }
 
     .controls {
-      background: #222;
-      padding: 10px 20px;
-      border-bottom: 1px solid #333;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
+      background: #222; padding: 10px 20px; border-bottom: 1px solid #333;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
     }
-    .controls label { color: #aaa; font-size: 13px; }
+    .controls label { color: #aaa; font-size: 12px; }
     .controls input, .controls select {
       background: #333; border: 1px solid #444; color: #fff;
-      padding: 5px 10px; border-radius: 4px; font-size: 13px; width: 110px;
+      padding: 5px 8px; border-radius: 4px; font-size: 13px; width: 110px;
     }
     .controls button {
       background: #4fc3f7; color: #111; border: none;
-      padding: 6px 16px; border-radius: 4px; cursor: pointer;
-      font-weight: bold; font-size: 13px;
+      padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;
     }
     .controls button:hover { background: #81d4fa; }
     .controls button:disabled { background: #444; color: #777; cursor: not-allowed; }
 
-    .btn-cart-open {
+    .btn-secondary {
       background: #333 !important; color: #e0e0e0 !important;
       border: 1px solid #555 !important; position: relative;
     }
-    .btn-cart-open:hover { background: #444 !important; }
-    .cart-badge {
+    .btn-secondary:hover { background: #444 !important; }
+
+    .badge-count {
       position: absolute; top: -6px; right: -6px;
       background: #ef5350; color: #fff; font-size: 10px; font-weight: bold;
-      border-radius: 999px; padding: 1px 5px; min-width: 16px;
-      text-align: center; display: none;
+      border-radius: 999px; padding: 1px 5px; min-width: 16px; text-align: center; display: none;
     }
+
+    .capital-row {
+      display: flex; align-items: center; gap: 8px;
+      background: #1a2a1a; border: 1px solid #2d5a2d; border-radius: 5px; padding: 4px 10px;
+    }
+    .capital-row label { color: #6ee7b7; font-size: 12px; white-space: nowrap; }
+    .capital-row input { background: #1e2e1e !important; border-color: #2d5a2d !important; color: #6ee7b7 !important; width: 130px !important; }
 
     .status-bar {
-      padding: 5px 20px; background: #1e1e1e; font-size: 12px;
-      color: #666; border-bottom: 1px solid #2a2a2a;
-      display: flex; gap: 24px; align-items: center;
+      padding: 5px 20px; background: #1e1e1e; font-size: 12px; color: #666;
+      border-bottom: 1px solid #2a2a2a; display: flex; gap: 20px; align-items: center;
     }
-    .live-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #66bb6a; display: inline-block;
-      animation: pulse 1.5s infinite;
-      margin-right: 4px;
-    }
-    @keyframes pulse {
-      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
-    }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #66bb6a; display: inline-block; animation: pulse 1.5s infinite; margin-right: 4px; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-    #error-box {
-      background: #2d1010; border: 1px solid #7f1d1d; color: #fca5a5;
-      padding: 10px 20px; margin: 12px 20px 0; border-radius: 4px; display: none;
+    /* TABS */
+    .tabs { display: flex; gap: 2px; padding: 0 20px; background: #1e1e1e; border-bottom: 1px solid #2a2a2a; overflow-x: auto; }
+    .tab-btn {
+      padding: 8px 14px; font-size: 12px; font-weight: 600; color: #666;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; white-space: nowrap; transition: color .15s;
     }
+    .tab-btn:hover { color: #aaa; }
+    .tab-btn.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }
+
+    #error-box { background: #2d1010; border: 1px solid #7f1d1d; color: #fca5a5; padding: 10px 20px; margin: 12px 20px 0; border-radius: 4px; display: none; }
     #loading { text-align: center; padding: 60px; color: #555; }
 
-    /* CARDS */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 14px; padding: 16px 20px;
-    }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 13px; padding: 14px 20px; }
 
     .card {
       background: #252525; border: 1px solid #333; border-radius: 8px;
-      padding: 14px 14px 12px; display: flex; flex-direction: column;
-      align-items: center; gap: 5px; position: relative; transition: border-color 0.15s;
+      padding: 13px 13px 11px; display: flex; flex-direction: column;
+      align-items: center; gap: 5px; position: relative; transition: border-color .15s;
     }
     .card:hover { border-color: #555; }
     .card.in-cart { border-color: #4fc3f7; }
+    .card.cant-afford { opacity: .45; }
 
     .card-add-btn {
-      position: absolute; top: 8px; right: 8px;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: #333; border: 1px solid #555; color: #aaa;
-      font-size: 18px; line-height: 1; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.1s, color 0.1s;
+      position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%;
+      background: #333; border: 1px solid #555; color: #aaa; font-size: 18px; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .1s,color .1s;
     }
     .card-add-btn:hover { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
     .card.in-cart .card-add-btn { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
 
-    .card-img { width: 52px; height: 52px; image-rendering: pixelated; object-fit: contain; }
-    .card-img-placeholder {
-      width: 52px; height: 52px; background: #333; border-radius: 6px;
-      display: none; align-items: center; justify-content: center; font-size: 20px;
+    /* NEW badge */
+    .badge-new {
+      position: absolute; top: 8px; left: 8px;
+      background: #7c3aed; color: #e9d5ff; font-size: 9px; font-weight: 800;
+      padding: 2px 5px; border-radius: 3px; letter-spacing: .5px;
     }
+    /* PUMP badge */
+    .badge-pump {
+      position: absolute; top: 8px; left: 8px;
+      background: #7f1d1d; color: #fca5a5; font-size: 9px; font-weight: 800;
+      padding: 2px 5px; border-radius: 3px; letter-spacing: .5px;
+    }
+
+    .card-img { width: 50px; height: 50px; image-rendering: pixelated; object-fit: contain; }
+    .card-img-placeholder { width: 50px; height: 50px; background: #333; border-radius: 6px; display: none; align-items: center; justify-content: center; font-size: 20px; }
     .card-name { font-weight: 700; font-size: 13px; color: #fff; text-align: center; line-height: 1.3; }
 
     .card-divider { width: 100%; height: 1px; background: #333; margin: 3px 0; }
-
-    .card-row {
-      width: 100%; display: flex; justify-content: space-between;
-      font-size: 12px; color: #aaa;
-    }
+    .card-row { width: 100%; display: flex; justify-content: space-between; font-size: 12px; color: #aaa; }
     .card-row span:last-child { color: #e0e0e0; font-weight: 500; }
 
-    /* Risk badge */
-    .risk-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
-      margin-top: 2px;
-    }
+    .risk-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
     .risk-low  { background: #1b4332; color: #6ee7b7; }
     .risk-med  { background: #451a03; color: #fbbf24; }
     .risk-high { background: #450a0a; color: #fca5a5; }
 
-    /* Volume mini bars */
     .vol-bars { width: 100%; display: flex; flex-direction: column; gap: 3px; margin: 2px 0; }
     .vol-bar-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #aaa; }
     .vol-bar-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
-    .vol-bar-fill  { height: 100%; border-radius: 2px; transition: width 0.3s; }
+    .vol-bar-fill  { height: 100%; border-radius: 2px; }
     .vol-bar-val   { width: 38px; text-align: right; color: #888; font-size: 11px; }
 
-    /* Profit breakdown */
-    .profit-row {
-      width: 100%; display: flex; justify-content: space-between;
-      font-size: 12px; margin-top: 2px;
-    }
-    .card-profit { font-size: 13px; font-weight: 700; margin-top: 4px; }
+    .exit-time { font-size: 11px; color: #aaa; text-align: center; }
+    .exit-fast { color: #6ee7b7; } .exit-med { color: #fbbf24; } .exit-slow { color: #fca5a5; }
 
-    .pos  { color: #66bb6a; }
-    .neg  { color: #ef5350; }
-    .warn { color: #ffa726; }
-    .neu  { color: #888; }
+    .card-profit { font-size: 13px; font-weight: 700; margin-top: 3px; }
+    .pos{color:#66bb6a} .neg{color:#ef5350} .warn{color:#ffa726} .neu{color:#888}
 
     #empty-msg { text-align: center; padding: 50px; color: #444; }
 
-    /* ===== CART PANEL ===== */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.65); z-index: 100;
-      align-items: flex-start; justify-content: flex-end;
-    }
+    /* ===== SIDE PANELS ===== */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 100; align-items: flex-start; justify-content: flex-end; }
     .modal-overlay.open { display: flex; }
 
-    .cart-panel {
-      background: #1e1e1e; border-left: 1px solid #333;
-      width: 440px; max-width: 100vw; height: 100vh;
-      overflow-y: auto; display: flex; flex-direction: column;
-    }
-    .cart-header {
-      padding: 16px 20px; border-bottom: 1px solid #333;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; background: #1e1e1e; z-index: 1;
-    }
-    .cart-header h2 { font-size: 16px; color: #fff; }
-    .cart-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; }
-    .cart-close:hover { color: #fff; }
+    .side-panel { background: #1e1e1e; border-left: 1px solid #333; width: 460px; max-width: 100vw; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+    .panel-header { padding: 15px 18px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #1e1e1e; z-index: 1; }
+    .panel-header h2 { font-size: 15px; color: #fff; }
+    .panel-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; }
+    .panel-close:hover { color: #fff; }
+    .panel-body { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .panel-tabs { display: flex; gap: 2px; padding: 0 16px; border-bottom: 1px solid #333; }
+    .panel-tab { padding: 8px 14px; font-size: 12px; font-weight: 600; color: #666; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; }
+    .panel-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }
 
-    .cart-body { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 14px; }
     .cart-empty { color: #555; text-align: center; padding: 40px 0; line-height: 1.8; }
 
-    .cart-item {
-      background: #252525; border: 1px solid #333; border-radius: 8px;
-      padding: 12px; display: flex; flex-direction: column; gap: 10px;
-    }
+    .cart-item { background: #252525; border: 1px solid #333; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
     .cart-item-header { display: flex; align-items: center; gap: 10px; }
     .cart-item-img { width: 34px; height: 34px; image-rendering: pixelated; object-fit: contain; flex-shrink: 0; }
     .cart-item-name { font-weight: 700; font-size: 13px; color: #fff; flex: 1; }
     .cart-item-remove { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; }
     .cart-item-remove:hover { color: #ef5350; }
 
-    /* big number inputs */
-    .cart-item-fields { display: flex; flex-direction: column; gap: 8px; }
-    .cart-field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .cart-field { display: flex; flex-direction: column; gap: 3px; }
-    .cart-field label { font-size: 11px; color: #888; }
-    .cart-field input {
-      background: #2e2e2e; border: 1px solid #444; color: #fff;
-      padding: 7px 10px; border-radius: 5px; font-size: 14px;
-      font-weight: 600; width: 100%;
-    }
-    .cart-field input:focus { outline: none; border-color: #4fc3f7; background: #333; }
-    .cart-field input[readonly] { color: #666; cursor: default; background: #222; }
-    .cart-field input.big {
-      font-size: 16px; padding: 9px 12px; text-align: right;
-    }
+    .cart-fields { display: flex; flex-direction: column; gap: 8px; }
+    .fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cf { display: flex; flex-direction: column; gap: 3px; }
+    .cf label { font-size: 11px; color: #888; }
+    .cf input { background: #2e2e2e; border: 1px solid #444; color: #fff; padding: 8px 10px; border-radius: 5px; font-size: 15px; font-weight: 600; width: 100%; }
+    .cf input:focus { outline: none; border-color: #4fc3f7; background: #333; }
+    .cf input[readonly] { color: #555; cursor: default; background: #222; }
 
-    .cart-item-result {
-      border-top: 1px solid #333; padding-top: 8px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    .result-row {
-      display: flex; justify-content: space-between;
-      font-size: 12px; color: #888;
-    }
-    .result-row b { color: #e0e0e0; }
-    .result-row.profit b { font-size: 14px; }
+    .cart-result { border-top: 1px solid #333; padding-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .rrow { display: flex; justify-content: space-between; font-size: 12px; color: #888; }
+    .rrow b { color: #e0e0e0; }
+    .rrow.big b { font-size: 14px; }
 
-    .cart-footer {
-      padding: 14px 16px; border-top: 1px solid #333;
-      display: flex; flex-direction: column; gap: 8px;
-      position: sticky; bottom: 0; background: #1e1e1e;
-    }
-    .cart-total {
-      font-size: 15px; font-weight: 700;
-      display: flex; justify-content: space-between;
-    }
-    .btn-clear {
-      background: #2d1010 !important; color: #ef9a9a !important;
-      border: 1px solid #7f1d1d !important; width: 100%; padding: 8px !important;
-      border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold;
-    }
-    .btn-clear:hover { background: #3d1515 !important; }
+    /* History */
+    .hist-item { background: #252525; border: 1px solid #333; border-radius: 6px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+    .hist-img { width: 28px; height: 28px; image-rendering: pixelated; flex-shrink: 0; }
+    .hist-info { flex: 1; }
+    .hist-name { font-size: 12px; font-weight: 700; color: #fff; }
+    .hist-detail { font-size: 11px; color: #666; }
+    .hist-profit { font-size: 13px; font-weight: 700; text-align: right; }
+    .hist-date { font-size: 10px; color: #555; text-align: right; }
+    .hist-remove { background: none; border: none; color: #444; font-size: 14px; cursor: pointer; padding: 0 4px; }
+    .hist-remove:hover { color: #ef5350; }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: #252525; border: 1px solid #333; border-radius: 6px; padding: 10px 12px; }
+    .stat-label { font-size: 11px; color: #666; }
+    .stat-val { font-size: 18px; font-weight: 700; margin-top: 2px; }
+
+    .panel-footer { padding: 12px 16px; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 8px; position: sticky; bottom: 0; background: #1e1e1e; }
+    .cart-total { font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; }
+    .btn-danger { background: #2d1010 !important; color: #ef9a9a !important; border: 1px solid #7f1d1d !important; width: 100%; padding: 8px !important; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .btn-danger:hover { background: #3d1515 !important; }
+    .btn-complete { background: #1b4332 !important; color: #6ee7b7 !important; border: 1px solid #2d5a2d !important; width: 100%; padding: 8px !important; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .btn-complete:hover { background: #234e37 !important; }
   </style>
 </head>
 <body>
@@ -231,6 +193,11 @@
 </header>
 
 <div class="controls">
+  <div class="capital-row">
+    <label>💰 Capital:</label>
+    <input type="number" id="filter-capital" value="" placeholder="Sem limite" min="0" step="100000" />
+  </div>
+
   <label>Margem mín. (%):</label>
   <input type="number" id="filter-margin" value="1" min="0" step="0.5" />
 
@@ -238,22 +205,24 @@
   <input type="number" id="filter-volume" value="10" min="0" />
 
   <label>Lucro mín. (coins):</label>
-  <input type="number" id="filter-profit" value="1000" min="0" step="500" style="width:130px" />
+  <input type="number" id="filter-profit" value="1000" min="0" step="500" style="width:120px" />
 
   <label>Ordenar por:</label>
-  <select id="sort-key" style="width:150px">
+  <select id="sort-key" style="width:155px">
     <option value="profit_hour">Lucro/hora</option>
     <option value="margin_pct">Margem %</option>
     <option value="margin_coins">Margem (coins)</option>
-    <option value="volume">Vol. compra/h</option>
+    <option value="roi_pct">ROI %</option>
+    <option value="exit_minutes">Saída mais rápida</option>
     <option value="risk_score">Menor risco</option>
+    <option value="buy_vol_h">Vol. compra/h</option>
   </select>
 
   <button id="btn-apply">Aplicar</button>
   <button id="btn-refresh" disabled>Atualizar</button>
-  <button class="btn-cart-open" id="btn-cart">
+  <button class="btn-secondary" id="btn-cart">
     🛒 Carrinho
-    <span class="cart-badge" id="cart-badge">0</span>
+    <span class="badge-count" id="cart-badge"></span>
   </button>
 </div>
 
@@ -263,25 +232,49 @@
   <div id="timer-info"></div>
 </div>
 
+<!-- Category tabs -->
+<div class="tabs" id="category-tabs">
+  <button class="tab-btn active" data-cat="all">Todos</button>
+  <button class="tab-btn" data-cat="ENCHANTMENT">Encantamentos</button>
+  <button class="tab-btn" data-cat="ESSENCE">Essências</button>
+  <button class="tab-btn" data-cat="GEM">Gemas</button>
+  <button class="tab-btn" data-cat="SHARD">Fragmentos</button>
+  <button class="tab-btn" data-cat="RUNE">Runas</button>
+  <button class="tab-btn" data-cat="other">Outros</button>
+</div>
+
 <div id="error-box"></div>
 <div id="loading">Buscando dados do Bazaar...</div>
 <div id="empty-msg" style="display:none">Nenhum flip encontrado com esses filtros.</div>
 <div class="cards-grid" id="cards"></div>
 
-<!-- CART -->
+<!-- CART / HISTORY PANEL -->
 <div class="modal-overlay" id="cart-modal">
-  <div class="cart-panel">
-    <div class="cart-header">
-      <h2>🛒 Meus Flips</h2>
-      <button class="cart-close" id="btn-cart-close">✕</button>
+  <div class="side-panel">
+    <div class="panel-header">
+      <h2 id="panel-title">🛒 Meus Flips</h2>
+      <button class="panel-close" id="btn-cart-close">✕</button>
     </div>
-    <div class="cart-body" id="cart-body"></div>
-    <div class="cart-footer">
+    <div class="panel-tabs">
+      <button class="panel-tab active" data-tab="active">Ativos</button>
+      <button class="panel-tab" data-tab="history">Histórico</button>
+      <button class="panel-tab" data-tab="stats">Performance</button>
+    </div>
+
+    <!-- Active flips -->
+    <div class="panel-body" id="tab-active"></div>
+    <!-- History -->
+    <div class="panel-body" id="tab-history" style="display:none"></div>
+    <!-- Stats -->
+    <div class="panel-body" id="tab-stats" style="display:none"></div>
+
+    <div class="panel-footer" id="panel-footer">
       <div class="cart-total">
-        <span>Lucro total:</span>
+        <span>Lucro em aberto:</span>
         <span id="cart-total" class="pos">0 coins</span>
       </div>
-      <button class="btn-clear" id="btn-clear-cart">🗑 Limpar tudo</button>
+      <button class="btn-complete" id="btn-complete-all">✅ Marcar todos como vendidos</button>
+      <button class="btn-danger" id="btn-clear-cart">🗑 Limpar ativos</button>
     </div>
   </div>
 </div>
@@ -291,9 +284,15 @@
   const REFRESH_SEC = 60;
   const IMG         = 'https://sky.coflnet.com/static/icon/';
 
-  let rawData = null, sortCol = 'profit_hour', sortAsc = false;
+  let rawData   = null;
+  let prevTop10 = new Set(); // IDs do top 10 da última atualização
+  let sortCol   = 'profit_hour', sortAsc = false;
+  let activeTab = 'active';
+  let activeCat = 'all';
   let timerInterval = null, refreshTimeout = null, nextAt = 0;
-  let cart = JSON.parse(localStorage.getItem('skyflip_cart') || '{}');
+
+  let cart    = JSON.parse(localStorage.getItem('skyflip_cart')    || '{}');
+  let history = JSON.parse(localStorage.getItem('skyflip_history') || '[]');
 
   // ---- format ----
   const fmt = n => {
@@ -304,11 +303,16 @@
     if (a >= 1e3) return (n/1e3).toFixed(1)+'K';
     return n.toFixed(0);
   };
-  const fmtFull = n => n == null || isNaN(n) ? '-' :
-    n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-  const fmtCoins = n => n == null || isNaN(n) ? '-' :
-    n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' coins';
-  const fmtPct   = n => isNaN(n) ? '-' : n.toFixed(2) + '%';
+  const fmtFull  = n => n == null || isNaN(n) ? '-' : n.toLocaleString('pt-BR', {maximumFractionDigits:1});
+  const fmtCoins = n => n == null || isNaN(n) ? '-' : n.toLocaleString('pt-BR', {maximumFractionDigits:0}) + ' coins';
+  const fmtPct   = n => isNaN(n) ? '-' : n.toFixed(2)+'%';
+
+  const fmtTime = mins => {
+    if (mins < 1)    return '< 1min';
+    if (mins < 60)   return Math.round(mins)+'min';
+    if (mins < 1440) return (mins/60).toFixed(1)+'h';
+    return (mins/1440).toFixed(1)+'d';
+  };
 
   // ---- API ----
   async function fetchData() {
@@ -319,6 +323,13 @@
     return json;
   }
 
+  // ---- Category detection ----
+  const CATS = ['ENCHANTMENT','ESSENCE','GEM','SHARD','RUNE'];
+  function getCategory(id) {
+    for (const c of CATS) if (id.startsWith(c)) return c;
+    return 'other';
+  }
+
   // ---- Calc flips ----
   function calcFlips(data) {
     const TAX = 0.9875;
@@ -326,8 +337,8 @@
       const qs = p.quick_status;
       if (!qs) return null;
 
-      const buyPrice  = qs.sellPrice;   // o que você paga (instabuy)
-      const sellPrice = qs.buyPrice;    // o que você recebe (instasell)
+      const buyPrice  = qs.sellPrice;
+      const sellPrice = qs.buyPrice;
       if (!buyPrice || !sellPrice || buyPrice <= 0 || sellPrice <= 0) return null;
 
       const effectiveSell = sellPrice * TAX;
@@ -339,46 +350,68 @@
       const buyVolD  = qs.buyMovingWeek  / 7;
       const sellVolD = qs.sellMovingWeek / 7;
 
+      // ROI % considerando capital investido
+      const roiPct = (marginCoins / buyPrice) * 100; // mesmo que marginPct mas nome explícito
+
+      // Tempo para vender 1 ordem de compra mínima (64 unidades) em minutos
+      const exitMinutes = sellVolH > 0 ? (64 / sellVolH) * 60 : 9999;
+
+      // Tempo para encher ordem de compra de 1h de volume
+      const fillMinutes = buyVolH > 0 ? 60 : 9999;
+
       const profitHour = marginCoins * Math.min(buyVolH, sellVolH);
 
-      // ---- Risk score (0=safe, 100=risky) ----
-      // Fatores: spread alto = risco, volume baixo = risco, margem alta demais = manipulação
-      const spreadRatio  = Math.abs(sellPrice - buyPrice) / buyPrice; // quanto maior, mais risco
-      const volScore     = Math.min(buyVolH, sellVolH);                // volume mínimo
-      const volRisk      = volScore < 5 ? 60 : volScore < 50 ? 30 : 10;
-      const spreadRisk   = spreadRatio > 0.5 ? 60 : spreadRatio > 0.2 ? 30 : 10;
-      const marginRisk   = marginPct > 100 ? 50 : marginPct > 30 ? 20 : 0; // margem absurda = manipulação
-      const riskScore    = Math.min(100, Math.round((volRisk + spreadRisk + marginRisk) / 3));
-      const riskLabel    = riskScore <= 30 ? 'Baixo' : riskScore <= 60 ? 'Médio' : 'Alto';
-      const riskClass    = riskScore <= 30 ? 'risk-low' : riskScore <= 60 ? 'risk-med' : 'risk-high';
+      // ---- Pump detector ----
+      // Compara spread atual com esperado: spread normal < 5%
+      const spread = (sellPrice - buyPrice) / buyPrice;
+      const isPump = spread > 0.3 && marginPct > 20; // spread grande + margem alta = suspeito
+
+      // ---- Risk score ----
+      const volMin   = Math.min(buyVolH, sellVolH);
+      const volRisk  = volMin < 5 ? 60 : volMin < 50 ? 30 : 10;
+      const spreadRisk = spread > 0.5 ? 60 : spread > 0.2 ? 30 : 10;
+      const manipRisk  = marginPct > 100 ? 50 : marginPct > 40 ? 25 : 0;
+      const riskScore  = Math.min(100, Math.round((volRisk + spreadRisk + manipRisk) / 3));
+      const riskLabel  = riskScore <= 30 ? 'Baixo' : riskScore <= 60 ? 'Médio' : 'Alto';
+      const riskClass  = riskScore <= 30 ? 'risk-low' : riskScore <= 60 ? 'risk-med' : 'risk-high';
 
       return {
-        id, name: id.replace(/_/g, ' '),
+        id, name: id.replace(/_/g,' '), category: getCategory(id),
         buy_price: buyPrice, sell_price: sellPrice,
-        effective_sell: effectiveSell,
         margin_coins: marginCoins, margin_pct: marginPct,
+        roi_pct: roiPct,
         buy_vol_h: buyVolH, sell_vol_h: sellVolH,
         buy_vol_d: buyVolD, sell_vol_d: sellVolD,
         supply: qs.sellVolume, demand: qs.buyVolume,
-        instabuys: qs.buyMovingWeek, instasells: qs.sellMovingWeek,
         profit_hour: profitHour,
+        exit_minutes: exitMinutes, fill_minutes: fillMinutes,
+        is_pump: isPump,
         risk_score: riskScore, risk_label: riskLabel, risk_class: riskClass,
       };
     }).filter(Boolean);
   }
 
   function process(flips) {
-    const minPct    = parseFloat(document.getElementById('filter-margin').value) || 0;
-    const minVol    = parseFloat(document.getElementById('filter-volume').value) || 0;
-    const minProfit = parseFloat(document.getElementById('filter-profit').value) || 0;
+    const minPct    = parseFloat(document.getElementById('filter-margin').value)  || 0;
+    const minVol    = parseFloat(document.getElementById('filter-volume').value)   || 0;
+    const minProfit = parseFloat(document.getElementById('filter-profit').value)   || 0;
+    const capital   = parseFloat(document.getElementById('filter-capital').value)  || Infinity;
+
     return flips
-      .filter(f => f.margin_pct >= minPct && f.buy_vol_h >= minVol && f.profit_hour >= minProfit)
+      .filter(f => {
+        if (f.margin_pct  < minPct)    return false;
+        if (f.buy_vol_h   < minVol)    return false;
+        if (f.profit_hour < minProfit) return false;
+        if (activeCat !== 'all' && f.category !== activeCat) return false;
+        return true;
+      })
       .sort((a, b) => {
         const va = a[sortCol] ?? 0, vb = b[sortCol] ?? 0;
-        // risk_score: menor = melhor, então inverte
-        if (sortCol === 'risk_score') return sortAsc ? vb - va : va - vb;
+        if (sortCol === 'risk_score' || sortCol === 'exit_minutes')
+          return sortAsc ? vb - va : va - vb;
         return sortAsc ? va - vb : vb - va;
-      });
+      })
+      .map(f => ({ ...f, cant_afford: capital < f.buy_price }));
   }
 
   // ---- Render cards ----
@@ -387,39 +420,44 @@
     const all    = calcFlips(rawData);
     const result = process(all);
 
-    document.getElementById('count-info').textContent =
-      `${result.length} flips de ${all.length} itens`;
+    document.getElementById('count-info').textContent = `${result.length} flips de ${all.length} itens`;
 
     const grid = document.getElementById('cards');
     document.getElementById('empty-msg').style.display = result.length ? 'none' : 'block';
     if (!result.length) { grid.innerHTML = ''; return; }
 
-    // max volumes para normalizar barras
-    const maxVolH = Math.max(...result.map(f => Math.max(f.buy_vol_h, f.sell_vol_h)), 1);
+    const maxVolH  = Math.max(...result.map(f => Math.max(f.buy_vol_h, f.sell_vol_h)), 1);
+    const top10ids = new Set(result.slice(0, 10).map(f => f.id));
+    const mClass   = p => p >= 5 ? 'pos' : p >= 2 ? 'warn' : 'neg';
+    const pClass   = v => v >= 0 ? 'pos' : 'neg';
 
-    const mClass = p => p >= 5 ? 'pos' : p >= 2 ? 'warn' : 'neg';
-    const pClass = v => v >= 0 ? 'pos' : 'neg';
+    const exitClass = m => m < 5 ? 'exit-fast' : m < 60 ? 'exit-med' : 'exit-slow';
+    const exitIcon  = m => m < 5 ? '⚡' : m < 60 ? '🕐' : '🐢';
 
     grid.innerHTML = result.map(f => {
-      const inCart = !!cart[f.id];
-      const buyBarW  = Math.round((f.buy_vol_h  / maxVolH) * 100);
-      const sellBarW = Math.round((f.sell_vol_h / maxVolH) * 100);
+      const inCart    = !!cart[f.id];
+      const isNew     = top10ids.has(f.id) && !prevTop10.has(f.id);
+      const buyBarW   = Math.round((f.buy_vol_h  / maxVolH) * 100);
+      const sellBarW  = Math.round((f.sell_vol_h / maxVolH) * 100);
+      const ec        = exitClass(f.exit_minutes);
+
+      let topBadge = '';
+      if (f.is_pump)  topBadge = `<span class="badge-pump">⚠ PUMP?</span>`;
+      else if (isNew) topBadge = `<span class="badge-new">✦ NOVO</span>`;
 
       return `
-      <div class="card${inCart ? ' in-cart' : ''}" data-id="${f.id}">
+      <div class="card${inCart ? ' in-cart' : ''}${f.cant_afford ? ' cant-afford' : ''}" data-id="${f.id}">
+        ${topBadge}
         <button class="card-add-btn" data-id="${f.id}" title="${inCart ? 'Ver no carrinho' : 'Adicionar ao carrinho'}">
           ${inCart ? '✓' : '+'}
         </button>
-
-        <img class="card-img"
-          src="${IMG}${encodeURIComponent(f.id)}/vanilla" alt="${f.name}"
+        <img class="card-img" src="${IMG}${encodeURIComponent(f.id)}/vanilla" alt="${f.name}"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
         <div class="card-img-placeholder">📦</div>
-
         <div class="card-name">${f.name}</div>
 
         <span class="risk-badge ${f.risk_class}">
-          ${f.risk_score <= 30 ? '🛡' : f.risk_score <= 60 ? '⚠️' : '🔴'} Risco ${f.risk_label}
+          ${f.risk_score<=30?'🛡':f.risk_score<=60?'⚠️':'🔴'} Risco ${f.risk_label}
         </span>
 
         <div class="card-divider"></div>
@@ -428,24 +466,20 @@
         <div class="card-row"><span>Vender por:</span><span>${fmtFull(f.sell_price)}</span></div>
         <div class="card-row">
           <span>Margem:</span>
-          <span class="${mClass(f.margin_pct)}">${fmtPct(f.margin_pct)} (${fmt(f.margin_coins)} c)</span>
+          <span class="${mClass(f.margin_pct)}">${fmtPct(f.margin_pct)} · ${fmt(f.margin_coins)}c</span>
         </div>
 
         <div class="card-divider"></div>
 
         <div class="vol-bars">
           <div class="vol-bar-row">
-            <span style="width:44px">Compra</span>
-            <div class="vol-bar-track">
-              <div class="vol-bar-fill" style="width:${buyBarW}%;background:#4fc3f7"></div>
-            </div>
+            <span style="width:40px">Compra</span>
+            <div class="vol-bar-track"><div class="vol-bar-fill" style="width:${buyBarW}%;background:#4fc3f7"></div></div>
             <span class="vol-bar-val">${fmt(f.buy_vol_h)}/h</span>
           </div>
           <div class="vol-bar-row">
-            <span style="width:44px">Venda</span>
-            <div class="vol-bar-track">
-              <div class="vol-bar-fill" style="width:${sellBarW}%;background:#66bb6a"></div>
-            </div>
+            <span style="width:40px">Venda</span>
+            <div class="vol-bar-track"><div class="vol-bar-fill" style="width:${sellBarW}%;background:#66bb6a"></div></div>
             <span class="vol-bar-val">${fmt(f.sell_vol_h)}/h</span>
           </div>
         </div>
@@ -454,12 +488,15 @@
           <span>${fmt(f.sell_vol_d)}/dia venda</span>
         </div>
 
+        <div class="exit-time ${ec}">${exitIcon(f.exit_minutes)} Saída ~${fmtTime(f.exit_minutes)} · ROI ${fmtPct(f.roi_pct)}</div>
+
         <div class="card-divider"></div>
-        <div class="card-profit ${pClass(f.profit_hour)}">
-          Lucro/h: ${fmt(f.profit_hour)} coins
-        </div>
+        <div class="card-profit ${pClass(f.profit_hour)}">Lucro/h: ${fmt(f.profit_hour)} coins</div>
       </div>`;
     }).join('');
+
+    // update prevTop10 para próxima atualização
+    prevTop10 = top10ids;
 
     grid.querySelectorAll('.card-add-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -472,15 +509,17 @@
   }
 
   // ---- Cart ----
-  const saveCart = () => localStorage.setItem('skyflip_cart', JSON.stringify(cart));
+  const saveCart    = () => localStorage.setItem('skyflip_cart',    JSON.stringify(cart));
+  const saveHistory = () => localStorage.setItem('skyflip_history', JSON.stringify(history));
 
   function addToCart(flip) {
     cart[flip.id] = {
       id: flip.id, name: flip.name,
       buy_price: flip.buy_price, sell_price: flip.sell_price,
       qty: 1, boughtAt: parseFloat(flip.buy_price.toFixed(1)), soldAt: '',
+      addedAt: Date.now(),
     };
-    saveCart(); updateCartBadge(); renderCart();
+    saveCart(); updateCartBadge();
     const card = document.querySelector(`.card[data-id="${flip.id}"]`);
     if (card) {
       card.classList.add('in-cart');
@@ -491,7 +530,7 @@
   }
 
   function removeFromCart(id) {
-    delete cart[id]; saveCart(); updateCartBadge(); renderCart();
+    delete cart[id]; saveCart(); updateCartBadge(); renderActiveTab();
     const card = document.querySelector(`.card[data-id="${id}"]`);
     if (card) {
       card.classList.remove('in-cart');
@@ -500,108 +539,227 @@
     }
   }
 
+  function completeFlip(id) {
+    const e = cart[id];
+    if (!e) return;
+    const qty    = parseFloat(e.qty)      || 0;
+    const bought = parseFloat(e.boughtAt) || 0;
+    const sold   = parseFloat(e.soldAt)   || 0;
+    if (!sold) { alert('Preencha o preço que vendeu antes de concluir.'); return; }
+    const profit = (sold * 0.9875 - bought) * qty;
+    history.unshift({
+      id: e.id, name: e.name, qty, bought, sold,
+      profit, date: new Date().toLocaleDateString('pt-BR'),
+    });
+    saveHistory();
+    removeFromCart(id);
+    renderHistoryTab();
+    renderStatsTab();
+  }
+
+  function completeAll() {
+    const entries = Object.values(cart).filter(e => parseFloat(e.soldAt) > 0);
+    if (!entries.length) { alert('Nenhum item com preço de venda preenchido.'); return; }
+    entries.forEach(e => completeFlip(e.id));
+  }
+
+  function calcResult(e) {
+    const qty    = parseFloat(e.qty)      || 0;
+    const bought = parseFloat(e.boughtAt) || 0;
+    const sold   = parseFloat(e.soldAt)   || 0;
+    return { spent: bought*qty, received: sold*0.9875*qty, profit: (sold*0.9875-bought)*qty };
+  }
+
   function updateCartBadge() {
     const n = Object.keys(cart).length;
     const b = document.getElementById('cart-badge');
     b.textContent = n; b.style.display = n > 0 ? 'block' : 'none';
   }
 
-  function calcResult(e) {
-    const qty = parseFloat(e.qty) || 0;
-    const bought = parseFloat(e.boughtAt) || 0;
-    const sold   = parseFloat(e.soldAt)   || 0;
-    const spent    = bought * qty;
-    const received = sold * 0.9875 * qty;
-    const profit   = received - spent;
-    return { spent, received, profit };
-  }
-
-  function renderCart() {
-    const body    = document.getElementById('cart-body');
-    const totEl   = document.getElementById('cart-total');
+  // ---- Render panel tabs ----
+  function renderActiveTab() {
+    const body  = document.getElementById('tab-active');
+    const totEl = document.getElementById('cart-total');
     const entries = Object.values(cart);
 
     if (!entries.length) {
-      body.innerHTML = '<div class="cart-empty">Nenhum flip salvo ainda.<br>Clique no <b>+</b> em um item para adicionar.</div>';
+      body.innerHTML = '<div class="cart-empty">Nenhum flip ativo.<br>Clique no <b>+</b> em um card para adicionar.</div>';
       totEl.textContent = '0 coins'; totEl.className = '';
       return;
     }
 
     let totalProfit = 0;
-
     body.innerHTML = entries.map(e => {
       const res = calcResult(e);
-      totalProfit += isNaN(res.profit) ? 0 : res.profit;
-      const hasSold = e.soldAt !== '' && parseFloat(e.soldAt) > 0;
+      if (!isNaN(res.profit)) totalProfit += res.profit;
+      const hasSold = parseFloat(e.soldAt) > 0;
       const pc = res.profit >= 0 ? 'pos' : 'neg';
+      const timeSince = e.addedAt ? Math.round((Date.now()-e.addedAt)/60000) : null;
 
       return `
       <div class="cart-item" data-id="${e.id}">
         <div class="cart-item-header">
-          <img class="cart-item-img"
-            src="${IMG}${encodeURIComponent(e.id)}/vanilla"
-            alt="${e.name}" onerror="this.style.display='none'" />
-          <div class="cart-item-name">${e.name}</div>
+          <img class="cart-item-img" src="${IMG}${encodeURIComponent(e.id)}/vanilla" alt="${e.name}" onerror="this.style.display='none'" />
+          <div>
+            <div class="cart-item-name">${e.name}</div>
+            ${timeSince !== null ? `<div style="font-size:10px;color:#555">há ${fmtTime(timeSince)}</div>` : ''}
+          </div>
           <button class="cart-item-remove" data-id="${e.id}">✕</button>
         </div>
-
-        <div class="cart-item-fields">
-          <div class="cart-field-group">
-            <div class="cart-field">
-              <label>Quantidade</label>
-              <input type="number" class="big" min="1" step="1"
-                value="${e.qty}" data-id="${e.id}" data-field="qty" />
-            </div>
-            <div class="cart-field">
-              <label>Preço atual</label>
-              <input type="number" class="big" value="${e.buy_price.toFixed(1)}" readonly />
-            </div>
+        <div class="cart-fields">
+          <div class="fields-row">
+            <div class="cf"><label>Quantidade</label>
+              <input type="number" min="1" step="1" value="${e.qty}" data-id="${e.id}" data-field="qty" /></div>
+            <div class="cf"><label>Preço atual</label>
+              <input type="number" value="${e.buy_price.toFixed(1)}" readonly /></div>
           </div>
-          <div class="cart-field">
-            <label>💰 Preço que COMPROU</label>
-            <input type="number" class="big" min="0" step="1"
-              value="${e.boughtAt}" data-id="${e.id}" data-field="boughtAt"
-              placeholder="0" />
-          </div>
-          <div class="cart-field">
-            <label>💵 Preço que VENDEU</label>
-            <input type="number" class="big" min="0" step="1"
-              value="${e.soldAt}" data-id="${e.id}" data-field="soldAt"
-              placeholder="Preencha ao vender..." />
-          </div>
+          <div class="cf"><label>💰 Preço que COMPROU</label>
+            <input type="number" min="0" step="1" value="${e.boughtAt}" placeholder="0" data-id="${e.id}" data-field="boughtAt" /></div>
+          <div class="cf"><label>💵 Preço que VENDEU</label>
+            <input type="number" min="0" step="1" value="${e.soldAt}" placeholder="Preencha ao vender..." data-id="${e.id}" data-field="soldAt" /></div>
         </div>
-
         ${hasSold ? `
-        <div class="cart-item-result">
-          <div class="result-row"><span>Gasto total:</span><b>${fmtCoins(res.spent)}</b></div>
-          <div class="result-row"><span>Recebido (c/ tax 1.25%):</span><b>${fmtCoins(res.received)}</b></div>
-          <div class="result-row profit"><span>Lucro:</span><b class="${pc}">${fmtCoins(res.profit)}</b></div>
+        <div class="cart-result">
+          <div class="rrow"><span>Gasto:</span><b>${fmtCoins(res.spent)}</b></div>
+          <div class="rrow"><span>Recebido (c/ tax):</span><b>${fmtCoins(res.received)}</b></div>
+          <div class="rrow big"><span>Lucro:</span><b class="${pc}">${fmtCoins(res.profit)}</b></div>
+          <button class="btn-complete" style="margin-top:4px" data-complete="${e.id}">✅ Concluir flip</button>
         </div>` : ''}
       </div>`;
     }).join('');
 
-    body.querySelectorAll('.cart-item-remove').forEach(btn =>
-      btn.addEventListener('click', () => removeFromCart(btn.dataset.id))
-    );
-
+    body.querySelectorAll('.cart-item-remove').forEach(b => b.addEventListener('click', () => removeFromCart(b.dataset.id)));
     body.querySelectorAll('input[data-field]').forEach(input => {
-      input.addEventListener('change', () => {
-        cart[input.dataset.id][input.dataset.field] = input.value;
-        saveCart(); renderCart();
-      });
-      // não re-render no input para não perder o foco, só salva
       input.addEventListener('input', () => {
         cart[input.dataset.id][input.dataset.field] = input.value;
         saveCart();
       });
+      input.addEventListener('change', () => {
+        cart[input.dataset.id][input.dataset.field] = input.value;
+        saveCart(); renderActiveTab();
+      });
     });
+    body.querySelectorAll('[data-complete]').forEach(b => b.addEventListener('click', () => completeFlip(b.dataset.complete)));
 
     totEl.textContent = fmtCoins(totalProfit);
     totEl.className   = totalProfit >= 0 ? 'pos' : 'neg';
   }
 
-  const openCart  = () => { document.getElementById('cart-modal').classList.add('open'); renderCart(); };
+  function renderHistoryTab() {
+    const body = document.getElementById('tab-history');
+    if (!history.length) {
+      body.innerHTML = '<div class="cart-empty">Nenhum flip concluído ainda.</div>';
+      return;
+    }
+    body.innerHTML = `
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn-danger" style="width:auto;padding:5px 12px!important" id="btn-clear-history">🗑 Limpar histórico</button>
+      </div>` +
+      history.map((h, i) => `
+      <div class="hist-item">
+        <img class="hist-img" src="${IMG}${encodeURIComponent(h.id)}/vanilla" alt="${h.name}" onerror="this.style.display='none'" />
+        <div class="hist-info">
+          <div class="hist-name">${h.name}</div>
+          <div class="hist-detail">x${h.qty} · comprou ${fmtFull(h.bought)} · vendeu ${fmtFull(h.sold)}</div>
+        </div>
+        <div>
+          <div class="hist-profit ${h.profit>=0?'pos':'neg'}">${fmtCoins(h.profit)}</div>
+          <div class="hist-date">${h.date}</div>
+        </div>
+        <button class="hist-remove" data-hi="${i}">✕</button>
+      </div>`).join('');
+
+    body.querySelectorAll('[data-hi]').forEach(b => {
+      b.addEventListener('click', () => {
+        history.splice(parseInt(b.dataset.hi), 1);
+        saveHistory(); renderHistoryTab(); renderStatsTab();
+      });
+    });
+    const clrBtn = body.querySelector('#btn-clear-history');
+    if (clrBtn) clrBtn.addEventListener('click', () => {
+      if (!confirm('Limpar todo o histórico?')) return;
+      history = []; saveHistory(); renderHistoryTab(); renderStatsTab();
+    });
+  }
+
+  function renderStatsTab() {
+    const body = document.getElementById('tab-stats');
+    if (!history.length) {
+      body.innerHTML = '<div class="cart-empty">Sem dados ainda.<br>Conclua flips para ver estatísticas.</div>';
+      return;
+    }
+    const total    = history.reduce((s,h) => s + h.profit, 0);
+    const wins     = history.filter(h => h.profit > 0).length;
+    const losses   = history.length - wins;
+    const best     = history.reduce((b,h) => h.profit > b.profit ? h : b, history[0]);
+    const worst    = history.reduce((b,h) => h.profit < b.profit ? h : b, history[0]);
+    const avgProfit = total / history.length;
+    const winRate   = (wins / history.length * 100).toFixed(1);
+
+    body.innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Lucro total</div>
+          <div class="stat-val ${total>=0?'pos':'neg'}">${fmt(total)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Flips concluídos</div>
+          <div class="stat-val">${history.length}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">% de acerto</div>
+          <div class="stat-val ${parseFloat(winRate)>=50?'pos':'neg'}">${winRate}%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Lucro médio</div>
+          <div class="stat-val ${avgProfit>=0?'pos':'neg'}">${fmt(avgProfit)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">✅ Gains</div>
+          <div class="stat-val pos">${wins}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">❌ Losses</div>
+          <div class="stat-val neg">${losses}</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div style="font-size:11px;color:#666;margin-bottom:6px">Melhor flip</div>
+        <div class="hist-item">
+          <img class="hist-img" src="${IMG}${encodeURIComponent(best.id)}/vanilla" onerror="this.style.display='none'" />
+          <div class="hist-info"><div class="hist-name">${best.name}</div><div class="hist-detail">x${best.qty}</div></div>
+          <div class="hist-profit pos">${fmtCoins(best.profit)}</div>
+        </div>
+      </div>
+      ${worst && worst.profit < 0 ? `
+      <div>
+        <div style="font-size:11px;color:#666;margin-bottom:6px">Pior flip</div>
+        <div class="hist-item">
+          <img class="hist-img" src="${IMG}${encodeURIComponent(worst.id)}/vanilla" onerror="this.style.display='none'" />
+          <div class="hist-info"><div class="hist-name">${worst.name}</div><div class="hist-detail">x${worst.qty}</div></div>
+          <div class="hist-profit neg">${fmtCoins(worst.profit)}</div>
+        </div>
+      </div>` : ''}`;
+  }
+
+  // ---- Panel open/close ----
+  function openCart() {
+    document.getElementById('cart-modal').classList.add('open');
+    switchPanelTab('active');
+  }
   const closeCart = () => document.getElementById('cart-modal').classList.remove('open');
+
+  function switchPanelTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.panel-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('tab-active').style.display  = tab === 'active'  ? 'flex' : 'none';
+    document.getElementById('tab-history').style.display = tab === 'history' ? 'flex' : 'none';
+    document.getElementById('tab-stats').style.display   = tab === 'stats'   ? 'flex' : 'none';
+    document.getElementById('panel-footer').style.display = tab === 'active' ? 'flex' : 'none';
+    if (tab === 'active')  renderActiveTab();
+    if (tab === 'history') renderHistoryTab();
+    if (tab === 'stats')   renderStatsTab();
+  }
 
   // ---- Load ----
   async function load() {
@@ -612,13 +770,13 @@
       rawData = await fetchData();
       document.getElementById('loading').style.display = 'none';
       document.getElementById('live-label').textContent =
-        'Live • atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        'Live • ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
       render();
       scheduleRefresh();
     } catch (e) {
       showError('Erro: ' + e.message);
       document.getElementById('loading').style.display = 'none';
-      document.getElementById('live-label').textContent = 'Erro na atualização';
+      document.getElementById('live-label').textContent = 'Erro';
     } finally {
       document.getElementById('btn-refresh').disabled = false;
     }
@@ -650,12 +808,30 @@
     if (e.target === document.getElementById('cart-modal')) closeCart();
   });
   document.getElementById('btn-clear-cart').addEventListener('click', () => {
-    if (!confirm('Limpar todos os flips salvos?')) return;
-    cart = {}; saveCart(); updateCartBadge(); renderCart(); render();
+    if (!confirm('Limpar todos os flips ativos?')) return;
+    cart = {}; saveCart(); updateCartBadge(); renderActiveTab(); render();
   });
+  document.getElementById('btn-complete-all').addEventListener('click', completeAll);
+
+  document.querySelectorAll('.panel-tab').forEach(b =>
+    b.addEventListener('click', () => switchPanelTab(b.dataset.tab))
+  );
+
   document.getElementById('sort-key').addEventListener('change', e => {
     sortCol = e.target.value; sortAsc = false; render();
   });
+
+  document.getElementById('category-tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    render();
+  });
+
+  // capital filter re-renders immediately on change
+  document.getElementById('filter-capital').addEventListener('input', render);
 
   updateCartBadge();
   load();
