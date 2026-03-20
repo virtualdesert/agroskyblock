@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/api/bazaar",      "destination": "/api/bazaar.js" },
-    { "source": "/api/leaderboard", "destination": "/api/leaderboard.js" }
+    { "source": "/api/leaderboard", "destination": "/api/leaderboard.js" },
+    { "source": "/api/crafting",    "destination": "/api/crafting.js" }
   ]
 }

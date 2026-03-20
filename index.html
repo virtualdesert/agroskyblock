@@ -269,6 +269,59 @@
     .btn-danger:hover { background: #3d1515 !important; }
     .btn-complete { background: #1b4332 !important; color: #6ee7b7 !important; border: 1px solid #2d5a2d !important; width: 100%; padding: 8px !important; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
     .btn-complete:hover { background: #234e37 !important; }
+
+    /* ===== CRAFTING MENU ===== */
+    .craft-view { display: none; }
+    .craft-view.active { display: block; }
+
+    .btn-craft { }
+    .btn-craft.active-craft {
+      background: linear-gradient(135deg, #1b4332, #14532d) !important;
+      color: #6ee7b7 !important; border-color: #2d5a2d !important;
+    }
+
+    .craft-header-section {
+      text-align: center; padding: 28px 20px 18px;
+      background: #111; border-bottom: 1px solid #2a2a2a;
+    }
+    .craft-title { font-size: 28px; color: #fff; font-weight: 700; margin-bottom: 4px; }
+    .craft-count { color: #4fc3f7; font-size: 16px; margin-bottom: 10px; font-weight: 600; }
+    .craft-desc  { color: #777; font-size: 13px; max-width: 720px; margin: 0 auto 18px; line-height: 1.5; }
+
+    .craft-controls {
+      display: flex; align-items: center; justify-content: center;
+      gap: 18px; flex-wrap: wrap;
+    }
+    .craft-sort-row { display: flex; align-items: center; gap: 8px; }
+    .craft-sort-row label { color: #aaa; font-size: 12px; }
+    .craft-sort-row select {
+      background: #333; border: 1px solid #444; color: #fff;
+      padding: 5px 8px; border-radius: 4px; font-size: 13px; min-width: 160px;
+    }
+
+    .craft-status {
+      padding: 5px 20px; background: #1e1e1e; font-size: 12px; color: #666;
+      border-bottom: 1px solid #2a2a2a; display: flex; gap: 16px; align-items: center;
+    }
+
+    .craft-card {
+      background: #252525; border: 1px solid #333; border-radius: 8px;
+      padding: 14px 13px 12px; display: flex; flex-direction: column;
+      align-items: center; gap: 4px; transition: border-color .15s;
+    }
+    .craft-card:hover { border-color: #555; }
+
+    .craft-row { width: 100%; font-size: 12px; color: #aaa; text-align: center; }
+    .craft-row b { color: #e0e0e0; font-weight: 600; }
+
+    .craft-profit-row {
+      width: 100%; font-size: 12px; font-weight: 700; text-align: center;
+      color: #66bb6a;
+    }
+    .craft-insta-row {
+      width: 100%; font-size: 12px; font-weight: 700; text-align: center;
+      color: #4fc3f7;
+    }
   </style>
 </head>
 <body>
@@ -276,7 +329,8 @@
 <header>
   <h1>SkyFlip</h1>
   <span class="lb-nick-display" id="header-nick"></span>
-  <button class="btn-secondary btn-pf" id="btn-pf" style="margin-left:auto">🚀 Pump & Fun</button>
+  <button class="btn-secondary btn-craft" id="btn-craft" style="margin-left:auto">⚒ Crafting</button>
+  <button class="btn-secondary btn-pf" id="btn-pf">🚀 Pump & Fun</button>
   <button class="btn-secondary" id="btn-leaderboard">🏆 Ranking</button>
 </header>
 
@@ -376,6 +430,39 @@
       <button class="btn-danger" id="btn-clear-cart">🗑 Limpar ativos</button>
     </div>
   </div>
+</div>
+
+<!-- CRAFTING MENU VIEW -->
+<div class="craft-view" id="craft-view">
+  <div class="craft-header-section">
+    <h2 class="craft-title">Crafting Menu</h2>
+    <div class="craft-count" id="craft-count">— Options</div>
+    <div class="craft-desc">This page shows all craftable items who's craft price is less than their bazaar price. All calculations are done assuming you buy order ingredients and sell order the product.</div>
+    <div class="craft-controls">
+      <div class="craft-sort-row">
+        <label>Sorting Key:</label>
+        <select id="craft-sort">
+          <option value="coins_per_hour">Coins per Hour</option>
+          <option value="insta_coins_per_hour">Insta Coins per Hour</option>
+          <option value="craft_margin">Craft Margin</option>
+          <option value="buy_price">Buy Price</option>
+          <option value="max_prod_h">Max Production / Hour</option>
+          <option value="one_hour_instabuys">One-Hour Instabuys</option>
+        </select>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:#aaa">
+        <input type="checkbox" id="craft-reversed" style="accent-color:#4fc3f7" />
+        Reversed
+      </label>
+      <button class="controls button" id="craft-refresh" style="background:#4fc3f7;color:#111;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:13px">Atualizar</button>
+    </div>
+  </div>
+  <div class="craft-status" id="craft-status">
+    <span id="craft-live-dot" class="live-dot" style="display:none"></span>
+    <span id="craft-status-text">Aguardando...</span>
+  </div>
+  <div id="craft-empty" style="display:none;text-align:center;padding:50px;color:#444">Nenhum item craftável encontrado.</div>
+  <div class="cards-grid" id="craft-cards"></div>
 </div>
 
 <!-- PUMP & FUN VIEW -->
@@ -1202,6 +1289,12 @@
 
   function setPfMode(on) {
     pfMode = on;
+    // turn off craft mode if switching to PF
+    if (on && typeof craftMode !== 'undefined' && craftMode) {
+      craftMode = false;
+      document.getElementById('craft-view').classList.remove('active');
+      document.getElementById('btn-craft').classList.remove('active-craft');
+    }
     document.getElementById('pf-view').classList.toggle('active', on);
     document.getElementById('btn-pf').classList.toggle('active-pf', on);
     // toggle main UI elements
@@ -1316,6 +1409,92 @@
   document.getElementById('pf-min-vol').addEventListener('input', renderPf);
   document.getElementById('pf-capital').addEventListener('input', renderPf);
   document.getElementById('pf-sort').addEventListener('change', renderPf);
+
+  // ---- Crafting Menu ----
+  let craftMode = false;
+  let craftData = null;
+
+  const MAIN_ELS = ['.controls', '.status-bar', '#category-tabs', '#error-box', '#loading', '#empty-msg', '#cards'];
+
+  function setCraftMode(on) {
+    craftMode = on;
+    if (on && pfMode) setPfMode(false);
+    document.getElementById('craft-view').classList.toggle('active', on);
+    document.getElementById('btn-craft').classList.toggle('active-craft', on);
+    MAIN_ELS.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = on ? 'none' : '';
+    });
+    if (on) {
+      if (!craftData) loadCraftData();
+      else renderCraft();
+    }
+  }
+
+  async function loadCraftData() {
+    const statusEl = document.getElementById('craft-status-text');
+    const dotEl    = document.getElementById('craft-live-dot');
+    dotEl.style.display = 'none';
+    statusEl.textContent = 'Buscando dados...';
+    document.getElementById('craft-refresh').disabled = true;
+    try {
+      const res = await fetch('/api/crafting');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.cause || 'API error');
+      craftData = json;
+      dotEl.style.display = 'inline-block';
+      statusEl.textContent = 'Live • ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      renderCraft();
+    } catch (e) {
+      statusEl.textContent = 'Erro: ' + e.message;
+    } finally {
+      document.getElementById('craft-refresh').disabled = false;
+    }
+  }
+
+  function renderCraft() {
+    if (!craftData) return;
+    const sortKey  = document.getElementById('craft-sort').value;
+    const reversed = document.getElementById('craft-reversed').checked;
+
+    let items = [...craftData.items];
+    items.sort((a, b) => {
+      const va = a[sortKey] ?? 0, vb = b[sortKey] ?? 0;
+      return reversed ? va - vb : vb - va;
+    });
+
+    const grid  = document.getElementById('craft-cards');
+    const count = document.getElementById('craft-count');
+    const empty = document.getElementById('craft-empty');
+
+    count.textContent = `${items.length} Options`;
+
+    if (!items.length) { empty.style.display = 'block'; grid.innerHTML = ''; return; }
+    empty.style.display = 'none';
+
+    grid.innerHTML = items.map(f => `
+      <div class="card craft-card" data-id="${f.id}">
+        <img class="card-img" src="${IMG}${encodeURIComponent(f.id)}/vanilla" alt="${f.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+        <div class="card-img-placeholder">📦</div>
+        <div class="card-name">${f.name}</div>
+        <div class="card-divider"></div>
+        <div class="craft-row"><b>Buy Price</b>: ${fmtFull(f.buy_price)} coins</div>
+        <div class="craft-row"><b>One-Hour Instabuys</b>: ${fmtFull(f.one_hour_instabuys)} items</div>
+        <div class="craft-row"><b>Max Production per Hour</b>: ${fmtFull(f.max_prod_h)} items</div>
+        <div class="craft-row"><b>Craft Price</b>: ${fmtFull(f.craft_price)} coins</div>
+        <div class="craft-row"><b>Craft Margin</b>: ${fmtFull(f.craft_margin)} coins</div>
+        <div class="card-divider"></div>
+        <div class="craft-profit-row"><b>Coins per Hour</b>: ${fmt(f.coins_per_hour)} coins</div>
+        <div class="craft-insta-row"><b>Insta Coins per Hour</b>: ${fmt(f.insta_coins_per_hour)} coins</div>
+      </div>`).join('');
+  }
+
+  document.getElementById('btn-craft').addEventListener('click', () => setCraftMode(!craftMode));
+  document.getElementById('craft-sort').addEventListener('change', renderCraft);
+  document.getElementById('craft-reversed').addEventListener('change', renderCraft);
+  document.getElementById('craft-refresh').addEventListener('click', () => { craftData = null; loadCraftData(); });
 
   updateHeaderNick();
   updateCartBadge();
