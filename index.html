@@ -61,6 +61,29 @@
     .controls button:hover { background: #81d4fa; }
     .controls button:disabled { background: #444; color: #777; cursor: not-allowed; }
 
+    .btn-cart-open {
+      background: #333 !important;
+      color: #e0e0e0 !important;
+      border: 1px solid #555 !important;
+      position: relative;
+    }
+    .btn-cart-open:hover { background: #444 !important; }
+
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef5350;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 999px;
+      padding: 1px 5px;
+      min-width: 16px;
+      text-align: center;
+      display: none;
+    }
+
     .status-bar {
       padding: 5px 20px;
       background: #1e1e1e;
@@ -104,10 +127,32 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      position: relative;
       transition: border-color 0.15s;
     }
 
-    .card:hover { border-color: #4fc3f7; }
+    .card:hover { border-color: #555; }
+
+    .card-add-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #333;
+      border: 1px solid #555;
+      color: #aaa;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s, color 0.1s;
+    }
+
+    .card-add-btn:hover { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
 
     .card-img {
       width: 56px;
@@ -121,7 +166,7 @@
       height: 56px;
       background: #333;
       border-radius: 6px;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       font-size: 22px;
@@ -167,6 +212,164 @@
       padding: 50px;
       color: #444;
     }
+
+    /* ===== CARRINHO / MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .cart-panel {
+      background: #1e1e1e;
+      border-left: 1px solid #333;
+      width: 420px;
+      max-width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cart-header h2 { font-size: 16px; color: #fff; }
+
+    .cart-close {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .cart-close:hover { color: #fff; }
+
+    .cart-body { flex: 1; padding: 12px 20px; display: flex; flex-direction: column; gap: 12px; }
+
+    .cart-empty { color: #555; text-align: center; padding: 40px 0; }
+
+    .cart-item {
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cart-item-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-item-img {
+      width: 36px;
+      height: 36px;
+      image-rendering: pixelated;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .cart-item-name {
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      flex: 1;
+    }
+
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .cart-item-remove:hover { color: #ef5350; }
+
+    .cart-item-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .cart-field label {
+      display: block;
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 2px;
+    }
+
+    .cart-field input {
+      width: 100%;
+      background: #333;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .cart-field input:focus { outline: none; border-color: #4fc3f7; }
+
+    .cart-item-result {
+      font-size: 12px;
+      color: #aaa;
+      border-top: 1px solid #333;
+      padding-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cart-item-result span { display: flex; justify-content: space-between; }
+    .cart-item-result b { color: #e0e0e0; }
+
+    .cart-footer {
+      padding: 16px 20px;
+      border-top: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cart-total {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .btn-clear {
+      background: #2d1010 !important;
+      color: #ef9a9a !important;
+      border: 1px solid #7f1d1d !important;
+      width: 100%;
+      padding: 8px !important;
+    }
+
+    .btn-clear:hover { background: #3d1515 !important; }
+
+    /* adicionado ao carrinho: brilho no card */
+    .card.in-cart { border-color: #4fc3f7; }
+    .card.in-cart .card-add-btn { background: #4fc3f7; color: #111; border-color: #4fc3f7; }
   </style>
 </head>
 <body>
@@ -195,7 +398,11 @@
   </select>
 
   <button id="btn-apply">Aplicar</button>
-  <button id="btn-refresh" disabled>Atualizar agora</button>
+  <button id="btn-refresh" disabled>Atualizar</button>
+  <button class="btn-cart-open" id="btn-cart">
+    🛒 Carrinho
+    <span class="cart-badge" id="cart-badge">0</span>
+  </button>
 </div>
 
 <div class="status-bar">
@@ -208,19 +415,42 @@
 <div id="empty-msg" style="display:none">Nenhum flip encontrado com esses filtros.</div>
 <div class="cards-grid" id="cards"></div>
 
+<!-- CARRINHO MODAL -->
+<div class="modal-overlay" id="cart-modal">
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h2>🛒 Meus Flips</h2>
+      <button class="cart-close" id="btn-cart-close">✕</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty">Nenhum flip salvo ainda.<br>Clique no + em um item para adicionar.</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Lucro total estimado:</span>
+        <span class="pos" id="cart-total">0 coins</span>
+      </div>
+      <button class="controls button btn-clear" id="btn-clear-cart">Limpar tudo</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  const PROXY = '/api/bazaar';
+  const PROXY       = '/api/bazaar';
   const REFRESH_SEC = 60;
-  // Imagens dos itens via sky.shiiyu.moe (API pública de ícones do Skyblock)
-  const IMG_BASE = 'https://sky.shiiyu.moe/item/';
+  const IMG_BASE    = 'https://sky.coflnet.com/static/icon/';
 
   let rawData = null;
   let sortCol = 'profit_hour';
   let sortAsc  = false;
-  let timerInterval = null;
+  let timerInterval  = null;
   let refreshTimeout = null;
   let nextAt = 0;
 
+  // cart: { [id]: { flip, qty, boughtAt, soldAt } }
+  let cart = JSON.parse(localStorage.getItem('skyflip_cart') || '{}');
+
+  // ---- Format helpers ----
   function fmt(n) {
     if (n == null || isNaN(n)) return '-';
     const a = Math.abs(n);
@@ -239,6 +469,12 @@
     return isNaN(n) ? '-' : n.toFixed(2) + '%';
   }
 
+  function fmtCoins(n) {
+    if (n == null || isNaN(n)) return '-';
+    return n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' coins';
+  }
+
+  // ---- API ----
   async function fetchData() {
     const res = await fetch(PROXY);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -247,26 +483,22 @@
     return json;
   }
 
+  // ---- Calc flips ----
   function calcFlips(data) {
     const TAX = 0.9875;
     const flips = [];
-
     for (const [id, p] of Object.entries(data.products)) {
       const qs = p.quick_status;
       if (!qs) continue;
-
       const instaBuyPrice  = qs.sellPrice;
       const instaSellPrice = qs.buyPrice;
       if (!instaBuyPrice || !instaSellPrice || instaBuyPrice <= 0 || instaSellPrice <= 0) continue;
-
       const effectiveSell = instaSellPrice * TAX;
       const marginCoins   = effectiveSell - instaBuyPrice;
       const marginPct     = (marginCoins / instaBuyPrice) * 100;
-
       const buyVol  = qs.buyMovingWeek  / 7 / 24;
       const sellVol = qs.sellMovingWeek / 7 / 24;
       const profitHour = marginCoins * Math.min(buyVol, sellVol);
-
       flips.push({
         id,
         name: id.replace(/_/g, ' '),
@@ -290,16 +522,15 @@
     const minPct    = parseFloat(document.getElementById('filter-margin').value) || 0;
     const minVol    = parseFloat(document.getElementById('filter-volume').value) || 0;
     const minProfit = parseFloat(document.getElementById('filter-profit').value) || 0;
-
     return flips
       .filter(f => f.margin_pct >= minPct && f.volume >= minVol && f.profit_hour >= minProfit)
       .sort((a, b) => {
-        const va = a[sortCol] ?? 0;
-        const vb = b[sortCol] ?? 0;
+        const va = a[sortCol] ?? 0, vb = b[sortCol] ?? 0;
         return sortAsc ? va - vb : vb - va;
       });
   }
 
+  // ---- Render cards ----
   function render() {
     if (!rawData) return;
     const all    = calcFlips(rawData);
@@ -312,35 +543,37 @@
     const emptyMsg = document.getElementById('empty-msg');
 
     if (result.length === 0) {
-      grid.innerHTML     = '';
+      grid.innerHTML = '';
       emptyMsg.style.display = 'block';
       return;
     }
     emptyMsg.style.display = 'none';
 
-    const mClass = (pct) => pct >= 5 ? 'pos' : pct >= 2 ? 'warn' : 'neg';
-    const pClass = (v)   => v >= 0 ? 'pos' : 'neg';
+    const mClass = pct => pct >= 5 ? 'pos' : pct >= 2 ? 'warn' : 'neg';
+    const pClass = v   => v >= 0 ? 'pos' : 'neg';
 
-    grid.innerHTML = result.map(f => `
-      <div class="card">
+    grid.innerHTML = result.map(f => {
+      const inCart = !!cart[f.id];
+      return `
+      <div class="card${inCart ? ' in-cart' : ''}" data-id="${f.id}">
+        <button class="card-add-btn" data-id="${f.id}" title="${inCart ? 'Já no carrinho' : 'Adicionar ao carrinho'}">
+          ${inCart ? '✓' : '+'}
+        </button>
         <img
           class="card-img"
-          src="${IMG_BASE}${encodeURIComponent(f.id)}"
+          src="${IMG_BASE}${encodeURIComponent(f.id)}/vanilla"
           alt="${f.name}"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
         />
-        <div class="card-img-placeholder" style="display:none">🧪</div>
-
+        <div class="card-img-placeholder">📦</div>
         <div class="card-name">${f.name}</div>
         <div class="card-divider"></div>
-
         <div class="card-row"><span>Buy Price:</span><span>${fmtFull(f.buy_price)} coins</span></div>
         <div class="card-row"><span>Sell Price:</span><span>${fmtFull(f.sell_price)} coins</span></div>
         <div class="card-row"><span>Supply:</span><span>${fmtFull(f.supply)}</span></div>
         <div class="card-row"><span>Demand:</span><span>${fmtFull(f.demand)}</span></div>
         <div class="card-row"><span>Instabuys:</span><span>${fmtFull(f.instabuys)}</span></div>
         <div class="card-row"><span>Instasells:</span><span>${fmtFull(f.instasells)}</span></div>
-
         <div class="card-divider"></div>
         <div class="card-row">
           <span>Margem:</span>
@@ -349,10 +582,179 @@
         <div class="card-profit ${pClass(f.profit_hour)}">
           Lucro/h: ${fmt(f.profit_hour)} coins
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
+
+    // bind + buttons
+    grid.querySelectorAll('.card-add-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const flip = calcFlips(rawData).find(f => f.id === id);
+        if (!flip) return;
+        if (cart[id]) {
+          // já está: abre o carrinho
+          openCart();
+        } else {
+          addToCart(flip);
+        }
+      });
+    });
   }
 
+  // ---- Cart logic ----
+  function saveCart() {
+    localStorage.setItem('skyflip_cart', JSON.stringify(cart));
+  }
+
+  function addToCart(flip) {
+    cart[flip.id] = {
+      id:        flip.id,
+      name:      flip.name,
+      buy_price: flip.buy_price,
+      sell_price: flip.sell_price,
+      qty:       1,
+      boughtAt:  flip.buy_price,
+      soldAt:    '',
+    };
+    saveCart();
+    updateCartBadge();
+    renderCart();
+    // update card style sem re-render tudo
+    const card = document.querySelector(`.card[data-id="${flip.id}"]`);
+    if (card) {
+      card.classList.add('in-cart');
+      const btn = card.querySelector('.card-add-btn');
+      btn.textContent = '✓';
+      btn.title = 'Já no carrinho';
+    }
+    openCart();
+  }
+
+  function removeFromCart(id) {
+    delete cart[id];
+    saveCart();
+    updateCartBadge();
+    renderCart();
+    // update card style
+    const card = document.querySelector(`.card[data-id="${id}"]`);
+    if (card) {
+      card.classList.remove('in-cart');
+      const btn = card.querySelector('.card-add-btn');
+      btn.textContent = '+';
+      btn.title = 'Adicionar ao carrinho';
+    }
+  }
+
+  function updateCartBadge() {
+    const count = Object.keys(cart).length;
+    const badge = document.getElementById('cart-badge');
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'block' : 'none';
+  }
+
+  function calcItemResult(entry) {
+    const qty      = parseFloat(entry.qty)      || 0;
+    const boughtAt = parseFloat(entry.boughtAt) || 0;
+    const soldAt   = parseFloat(entry.soldAt)   || 0;
+    const TAX      = 0.9875;
+    const spent    = boughtAt * qty;
+    const received = soldAt * TAX * qty;
+    const profit   = received - spent;
+    return { spent, received, profit };
+  }
+
+  function renderCart() {
+    const body  = document.getElementById('cart-body');
+    const total = document.getElementById('cart-total');
+    const entries = Object.values(cart);
+
+    if (entries.length === 0) {
+      body.innerHTML = '<div class="cart-empty">Nenhum flip salvo ainda.<br>Clique no + em um item para adicionar.</div>';
+      total.textContent = '0 coins';
+      total.className = '';
+      return;
+    }
+
+    let totalProfit = 0;
+
+    body.innerHTML = entries.map(entry => {
+      const res = calcItemResult(entry);
+      totalProfit += res.profit;
+      const pClass = res.profit >= 0 ? 'pos' : 'neg';
+      const showResult = entry.soldAt !== '' && parseFloat(entry.soldAt) > 0;
+
+      return `
+      <div class="cart-item" data-id="${entry.id}">
+        <div class="cart-item-header">
+          <img class="cart-item-img"
+            src="${IMG_BASE}${encodeURIComponent(entry.id)}/vanilla"
+            alt="${entry.name}"
+            onerror="this.style.display='none'"
+          />
+          <div class="cart-item-name">${entry.name}</div>
+          <button class="cart-item-remove" data-id="${entry.id}" title="Remover">✕</button>
+        </div>
+
+        <div class="cart-item-fields">
+          <div class="cart-field">
+            <label>Qtd. comprada</label>
+            <input type="number" min="1" value="${entry.qty}" data-id="${entry.id}" data-field="qty" />
+          </div>
+          <div class="cart-field">
+            <label>Preço que comprou</label>
+            <input type="number" min="0" step="0.1" value="${entry.boughtAt}" data-id="${entry.id}" data-field="boughtAt" />
+          </div>
+          <div class="cart-field">
+            <label>Preço que vendeu</label>
+            <input type="number" min="0" step="0.1" value="${entry.soldAt}" placeholder="Preencha ao vender" data-id="${entry.id}" data-field="soldAt" />
+          </div>
+          <div class="cart-field">
+            <label>Preço atual mercado</label>
+            <input type="number" value="${entry.buy_price.toFixed(1)}" readonly style="color:#888;cursor:default" />
+          </div>
+        </div>
+
+        ${showResult ? `
+        <div class="cart-item-result">
+          <span><span>Gasto:</span><b>${fmtCoins(res.spent)}</b></span>
+          <span><span>Recebido (c/ tax):</span><b>${fmtCoins(res.received)}</b></span>
+          <span><span>Lucro:</span><b class="${pClass}">${fmtCoins(res.profit)}</b></span>
+        </div>` : ''}
+      </div>`;
+    }).join('');
+
+    // bind remove buttons
+    body.querySelectorAll('.cart-item-remove').forEach(btn => {
+      btn.addEventListener('click', () => removeFromCart(btn.dataset.id));
+    });
+
+    // bind field inputs
+    body.querySelectorAll('.cart-item-fields input:not([readonly])').forEach(input => {
+      input.addEventListener('input', () => {
+        const id    = input.dataset.id;
+        const field = input.dataset.field;
+        cart[id][field] = input.value;
+        saveCart();
+        // re-render só o resultado sem recriar tudo
+        renderCart();
+      });
+    });
+
+    // total
+    total.textContent = fmtCoins(totalProfit);
+    total.className = totalProfit >= 0 ? 'pos' : 'neg';
+  }
+
+  function openCart() {
+    document.getElementById('cart-modal').classList.add('open');
+    renderCart();
+  }
+
+  function closeCart() {
+    document.getElementById('cart-modal').classList.remove('open');
+  }
+
+  // ---- Load ----
   async function load() {
     hideError();
     document.getElementById('btn-refresh').disabled = true;
@@ -383,10 +785,7 @@
     }, REFRESH_SEC * 1000);
   }
 
-  function hideError() {
-    document.getElementById('error-box').style.display = 'none';
-  }
-
+  function hideError() { document.getElementById('error-box').style.display = 'none'; }
   function showError(msg) {
     const box = document.getElementById('error-box');
     box.textContent = msg;
@@ -394,14 +793,32 @@
     console.error('[SkyFlip]', msg);
   }
 
+  // ---- Events ----
   document.getElementById('btn-apply').addEventListener('click', render);
   document.getElementById('btn-refresh').addEventListener('click', load);
+  document.getElementById('btn-cart').addEventListener('click', openCart);
+  document.getElementById('btn-cart-close').addEventListener('click', closeCart);
+  document.getElementById('btn-clear-cart').addEventListener('click', () => {
+    if (!confirm('Limpar todos os flips salvos?')) return;
+    cart = {};
+    saveCart();
+    updateCartBadge();
+    renderCart();
+    render();
+  });
+
+  document.getElementById('cart-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('cart-modal')) closeCart();
+  });
+
   document.getElementById('sort-key').addEventListener('change', e => {
     sortCol = e.target.value;
     sortAsc = false;
     render();
   });
 
+  // init
+  updateCartBadge();
   load();
 </script>
 </body>
