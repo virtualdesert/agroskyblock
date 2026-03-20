@@ -4,6 +4,6 @@
   "description": "Hypixel Skyblock Bazaar Flipper",
   "main": "api/bazaar.js",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   }
 }
