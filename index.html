@@ -158,6 +158,56 @@
     .lb-msg.err { background:#2d1010; color:#fca5a5; }
     .lb-nick-display { font-size:12px; color:#6ee7b7; margin-left:8px; font-weight:600; }
 
+    /* Pump & Fun mode */
+    .pf-view { display:none; }
+    .pf-view.active { display:block; }
+    .main-view { display:block; }
+    .main-view.hidden { display:none; }
+
+    .pf-controls {
+      background:#1a0a1a; border-bottom:1px solid #4a1a4a; padding:10px 20px;
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    }
+    .pf-controls label { color:#c084fc; font-size:12px; }
+    .pf-controls input, .pf-controls select {
+      background:#2a102a; border:1px solid #6b21a8; color:#e9d5ff;
+      padding:5px 8px; border-radius:4px; font-size:13px; width:130px;
+    }
+
+    .pf-status { padding:5px 20px; background:#130813; font-size:12px; color:#9333ea; border-bottom:1px solid #3b0764; }
+
+    .pf-card {
+      background:#1e0d1e; border:1px solid #4a1a4a; border-radius:8px;
+      padding:14px; display:flex; flex-direction:column; gap:6px; position:relative;
+      transition:border-color .15s;
+    }
+    .pf-card:hover { border-color:#7c3aed; }
+    .pf-card.pf-cant-afford { opacity:.4; }
+
+    .pf-card-img { width:44px; height:44px; image-rendering:pixelated; object-fit:contain; flex-shrink:0; }
+    .pf-card-name { font-weight:700; font-size:13px; color:#e9d5ff; }
+    .pf-card-header { display:flex; align-items:center; gap:10px; }
+
+    .pf-row { display:flex; justify-content:space-between; font-size:12px; color:#9f7ab5; }
+    .pf-row span:last-child { color:#e9d5ff; font-weight:500; }
+
+    .pf-profit { font-size:16px; font-weight:800; color:#c084fc; margin-top:4px; text-align:center; }
+    .pf-cost   { font-size:11px; color:#6b21a8; text-align:center; }
+
+    .pf-divider { width:100%; height:1px; background:#3b0764; margin:3px 0; }
+
+    .pf-vol { font-size:11px; color:#7e22ce; text-align:center; }
+    .pf-vol.ok  { color:#a78bfa; }
+    .pf-vol.low { color:#fca5a5; }
+
+    .btn-pf {
+      background: linear-gradient(135deg,#7c3aed,#9333ea) !important;
+      color:#fff !important; border:none !important; font-weight:700 !important;
+      font-size:13px; letter-spacing:.3px;
+    }
+    .btn-pf:hover { background: linear-gradient(135deg,#6d28d9,#7e22ce) !important; }
+    .btn-pf.active-pf { background: linear-gradient(135deg,#4c1d95,#5b21b6) !important; }
+
     #empty-msg { text-align: center; padding: 50px; color: #444; }
 
     /* ===== SIDE PANELS ===== */
@@ -226,7 +276,8 @@
 <header>
   <h1>SkyFlip</h1>
   <span class="lb-nick-display" id="header-nick"></span>
-  <button class="btn-secondary" id="btn-leaderboard" style="margin-left:auto">🏆 Ranking</button>
+  <button class="btn-secondary btn-pf" id="btn-pf" style="margin-left:auto">🚀 Pump & Fun</button>
+  <button class="btn-secondary" id="btn-leaderboard">🏆 Ranking</button>
 </header>
 
 <div class="controls">
@@ -325,6 +376,30 @@
       <button class="btn-danger" id="btn-clear-cart">🗑 Limpar ativos</button>
     </div>
   </div>
+</div>
+
+<!-- PUMP & FUN VIEW -->
+<div class="pf-view" id="pf-view">
+  <div class="pf-controls">
+    <label>🪙 Preço máx./unit:</label>
+    <input type="number" id="pf-max-price" value="10" min="0.01" step="0.5" />
+    <label>📦 Vol. mín./dia:</label>
+    <input type="number" id="pf-min-vol" value="50000" min="1000" step="10000" />
+    <div class="capital-row" style="border-color:#6b21a8;background:#1a0a1a">
+      <label style="color:#c084fc">💰 Capital:</label>
+      <input type="number" id="pf-capital" value="" placeholder="Sem limite" min="0" step="100000" style="background:#2a102a!important;border-color:#6b21a8!important;color:#c084fc!important;width:130px!important" />
+    </div>
+    <label>Ordenar por:</label>
+    <select id="pf-sort">
+      <option value="pf_profit">Lucro total</option>
+      <option value="pf_margin_pct">Margem %</option>
+      <option value="pf_cost">Menor custo</option>
+      <option value="buy_vol_d">Volume/dia</option>
+    </select>
+  </div>
+  <div class="pf-status" id="pf-status">Carregando...</div>
+  <div id="pf-empty" style="display:none;text-align:center;padding:50px;color:#6b21a8">Nenhum item encontrado com esses filtros.</div>
+  <div class="cards-grid" id="pf-cards"></div>
 </div>
 
 <!-- LEADERBOARD MODAL -->
@@ -1118,6 +1193,129 @@
   document.getElementById('lb-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('lb-overlay')) closeLeaderboard();
   });
+
+  // ---- Pump & Fun ----
+  const PF_UNITS = 71680; // 1120 stacks × 64
+  let pfMode = false;
+
+  const PF_MAIN_ELS = ['#filter-capital', '#filter-capital ~*', '.controls', '.status-bar', '#category-tabs', '#error-box', '#loading', '#empty-msg', '#cards'];
+
+  function setPfMode(on) {
+    pfMode = on;
+    document.getElementById('pf-view').classList.toggle('active', on);
+    document.getElementById('btn-pf').classList.toggle('active-pf', on);
+    // toggle main UI elements
+    const mainEls = ['.controls', '.status-bar', '#category-tabs', '#error-box', '#loading', '#empty-msg', '#cards'];
+    mainEls.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = on ? 'none' : '';
+    });
+    if (on) renderPf();
+  }
+
+  function calcPf() {
+    if (!rawData) return [];
+    const maxPrice = parseFloat(document.getElementById('pf-max-price').value) || 10;
+    const minVolD  = parseFloat(document.getElementById('pf-min-vol').value)   || 50000;
+    const pfCap    = parseFloat(document.getElementById('pf-capital').value)   || Infinity;
+    const TAX = 0.9875;
+
+    return Object.entries(rawData.products).map(([id, p]) => {
+      const qs = p.quick_status;
+      if (!qs) return null;
+
+      const buyPrice  = qs.sellPrice;  // preço que você PAGA (instabuy)
+      const sellPrice = qs.buyPrice;   // preço que você RECEBE (instasell)
+      if (!buyPrice || !sellPrice || buyPrice <= 0 || sellPrice <= 0) return null;
+      if (buyPrice > maxPrice) return null;
+
+      const volD = qs.buyMovingWeek / 7; // volume diário de compra
+      if (volD < minVolD) return null;
+
+      const cost       = buyPrice  * PF_UNITS;
+      const revenue    = sellPrice * PF_UNITS * TAX;
+      const pfProfit   = revenue - cost;
+      if (pfProfit <= 0) return null;
+
+      const pfMarginPct = (pfProfit / cost) * 100;
+      const cantAfford  = isFinite(pfCap) && pfCap < cost;
+
+      return {
+        id, name: id.replace(/_/g,' '),
+        buy_price: buyPrice, sell_price: sellPrice,
+        pf_cost: cost, pf_revenue: revenue, pf_profit: pfProfit,
+        pf_margin_pct: pfMarginPct,
+        buy_vol_d: volD, sell_vol_d: qs.sellMovingWeek / 7,
+        cant_afford: cantAfford,
+      };
+    }).filter(Boolean);
+  }
+
+  function renderPf() {
+    if (!rawData) return;
+    const pfSort   = document.getElementById('pf-sort').value;
+    const pfCap    = parseFloat(document.getElementById('pf-capital').value) || Infinity;
+
+    let items = calcPf();
+
+    // sort
+    items.sort((a, b) => {
+      if (pfSort === 'pf_cost')    return a.pf_cost - b.pf_cost;
+      if (pfSort === 'buy_vol_d')  return b.buy_vol_d - a.buy_vol_d;
+      if (pfSort === 'pf_margin_pct') return b.pf_margin_pct - a.pf_margin_pct;
+      return b.pf_profit - a.pf_profit; // default: lucro total
+    });
+
+    const status = document.getElementById('pf-status');
+    const empty  = document.getElementById('pf-empty');
+    const grid   = document.getElementById('pf-cards');
+    status.textContent = `${items.length} itens · compra de ${PF_UNITS.toLocaleString('pt-BR')} unidades por operação`;
+
+    if (!items.length) { empty.style.display = 'block'; grid.innerHTML = ''; return; }
+    empty.style.display = 'none';
+
+    grid.innerHTML = items.map(f => {
+      const volOk = f.buy_vol_d >= PF_UNITS;
+      const volClass = volOk ? 'ok' : 'low';
+      const volMsg   = volOk
+        ? `✅ Vol. suficiente (${fmt(f.buy_vol_d)}/dia)`
+        : `⚠ Vol. baixo (${fmt(f.buy_vol_d)}/dia) — pode não encher`;
+
+      return `
+      <div class="pf-card${f.cant_afford ? ' pf-cant-afford' : ''}">
+        <div class="pf-card-header">
+          <img class="pf-card-img" src="${IMG}${encodeURIComponent(f.id)}/vanilla" alt="${f.name}"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="card-img-placeholder" style="width:44px;height:44px;font-size:16px">📦</div>
+          <div>
+            <div class="pf-card-name">${f.name}</div>
+            <div style="font-size:11px;color:#7c3aed">${PF_UNITS.toLocaleString('pt-BR')}x · ${fmtPct(f.pf_margin_pct)} margem</div>
+          </div>
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <div class="pf-row"><span>Comprar a:</span><span>${fmtFull(f.buy_price)} coins/unit</span></div>
+        <div class="pf-row"><span>Vender a:</span><span>${fmtFull(f.sell_price)} coins/unit</span></div>
+
+        <div class="pf-divider"></div>
+
+        <div class="pf-cost">Custo total: ${fmt(f.pf_cost)} coins</div>
+        <div class="pf-profit">${fmt(f.pf_profit)} coins</div>
+        <div style="font-size:10px;color:#6b21a8;text-align:center">lucro da operação</div>
+
+        <div class="pf-divider"></div>
+        <div class="pf-vol ${volClass}">${volMsg}</div>
+        ${f.cant_afford ? `<div style="font-size:11px;color:#fca5a5;text-align:center">⛔ Capital insuficiente (precisa ${fmt(f.pf_cost)})</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('btn-pf').addEventListener('click', () => setPfMode(!pfMode));
+  document.getElementById('pf-max-price').addEventListener('input', renderPf);
+  document.getElementById('pf-min-vol').addEventListener('input', renderPf);
+  document.getElementById('pf-capital').addEventListener('input', renderPf);
+  document.getElementById('pf-sort').addEventListener('change', renderPf);
 
   updateHeaderNick();
   updateCartBadge();
