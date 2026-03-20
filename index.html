@@ -71,10 +71,6 @@
       gap: 24px;
     }
 
-    .status-bar span { color: #4fc3f7; }
-
-    .container { padding: 0 20px 20px; }
-
     #error-box {
       background: #2d1010;
       border: 1px solid #7f1d1d;
@@ -91,46 +87,79 @@
       color: #555;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      margin-top: 12px;
+    /* CARDS GRID */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      padding: 16px 20px;
     }
 
-    thead th {
+    .card {
       background: #252525;
-      padding: 8px 12px;
-      text-align: left;
-      color: #888;
-      font-weight: 600;
-      border-bottom: 2px solid #333;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.15s;
     }
 
-    thead th:hover { color: #ccc; }
-    thead th.sorted { color: #4fc3f7; }
-    .arrow { margin-left: 4px; font-size: 10px; }
+    .card:hover { border-color: #4fc3f7; }
 
-    tbody tr { border-bottom: 1px solid #242424; }
-    tbody tr:hover { background: #242424; }
+    .card-img {
+      width: 56px;
+      height: 56px;
+      image-rendering: pixelated;
+      object-fit: contain;
+    }
 
-    td { padding: 7px 12px; }
+    .card-img-placeholder {
+      width: 56px;
+      height: 56px;
+      background: #333;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
 
-    td.name {
-      font-weight: 600;
-      color: #e0e0e0;
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .card-name {
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .card-divider {
+      width: 100%;
+      height: 1px;
+      background: #333;
+      margin: 4px 0;
+    }
+
+    .card-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .card-row span:last-child { color: #e0e0e0; font-weight: 500; }
+
+    .card-profit {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .pos { color: #66bb6a; }
     .neg { color: #ef5350; }
-    .neu { color: #888; }
     .warn { color: #ffa726; }
 
     #empty-msg {
@@ -176,30 +205,14 @@
 
 <div id="error-box"></div>
 <div id="loading">Buscando dados do Bazaar...</div>
-
-<div class="container">
-  <table id="table" style="display:none">
-    <thead>
-      <tr>
-        <th style="width:36px">#</th>
-        <th data-col="name">Item</th>
-        <th data-col="buy_price">Comprar por</th>
-        <th data-col="sell_price">Vender por</th>
-        <th data-col="margin_coins">Margem</th>
-        <th data-col="margin_pct">Margem %</th>
-        <th data-col="volume">Vol. compra/h</th>
-        <th data-col="sell_volume">Vol. venda/h</th>
-        <th data-col="profit_hour">Lucro/hora</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-  <div id="empty-msg" style="display:none">Nenhum flip encontrado com esses filtros.</div>
-</div>
+<div id="empty-msg" style="display:none">Nenhum flip encontrado com esses filtros.</div>
+<div class="cards-grid" id="cards"></div>
 
 <script>
   const PROXY = '/api/bazaar';
   const REFRESH_SEC = 60;
+  // Imagens dos itens via sky.shiiyu.moe (API pública de ícones do Skyblock)
+  const IMG_BASE = 'https://sky.shiiyu.moe/item/';
 
   let rawData = null;
   let sortCol = 'profit_hour';
@@ -208,7 +221,6 @@
   let refreshTimeout = null;
   let nextAt = 0;
 
-  // --- Format ---
   function fmt(n) {
     if (n == null || isNaN(n)) return '-';
     const a = Math.abs(n);
@@ -218,11 +230,15 @@
     return n.toFixed(0);
   }
 
+  function fmtFull(n) {
+    if (n == null || isNaN(n)) return '-';
+    return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  }
+
   function fmtPct(n) {
     return isNaN(n) ? '-' : n.toFixed(2) + '%';
   }
 
-  // --- API ---
   async function fetchData() {
     const res = await fetch(PROXY);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -231,20 +247,16 @@
     return json;
   }
 
-  // --- Calc flips ---
   function calcFlips(data) {
-    const TAX = 0.9875; // 1.25% de taxa do Hypixel
+    const TAX = 0.9875;
     const flips = [];
 
     for (const [id, p] of Object.entries(data.products)) {
       const qs = p.quick_status;
       if (!qs) continue;
 
-      // Na API Hypixel: sellPrice = menor sell order (você paga para instabuy)
-      //                 buyPrice  = maior buy order  (você recebe no instasell)
-      const instaBuyPrice  = qs.sellPrice;  // preço que você PAGA ao comprar
-      const instaSellPrice = qs.buyPrice;   // preço que você RECEBE ao vender
-
+      const instaBuyPrice  = qs.sellPrice;
+      const instaSellPrice = qs.buyPrice;
       if (!instaBuyPrice || !instaSellPrice || instaBuyPrice <= 0 || instaSellPrice <= 0) continue;
 
       const effectiveSell = instaSellPrice * TAX;
@@ -253,7 +265,6 @@
 
       const buyVol  = qs.buyMovingWeek  / 7 / 24;
       const sellVol = qs.sellMovingWeek / 7 / 24;
-
       const profitHour = marginCoins * Math.min(buyVol, sellVol);
 
       flips.push({
@@ -265,32 +276,30 @@
         margin_pct:   marginPct,
         volume:       buyVol,
         sell_volume:  sellVol,
+        instabuys:    qs.buyMovingWeek,
+        instasells:   qs.sellMovingWeek,
+        supply:       qs.sellVolume,
+        demand:       qs.buyVolume,
         profit_hour:  profitHour,
       });
     }
     return flips;
   }
 
-  // --- Filter & sort ---
   function process(flips) {
     const minPct    = parseFloat(document.getElementById('filter-margin').value) || 0;
     const minVol    = parseFloat(document.getElementById('filter-volume').value) || 0;
     const minProfit = parseFloat(document.getElementById('filter-profit').value) || 0;
 
-    const filtered = flips.filter(f =>
-      f.margin_pct     >= minPct &&
-      f.volume         >= minVol &&
-      f.profit_hour    >= minProfit
-    );
-
-    return filtered.sort((a, b) => {
-      const va = a[sortCol] ?? 0;
-      const vb = b[sortCol] ?? 0;
-      return sortAsc ? va - vb : vb - va;
-    });
+    return flips
+      .filter(f => f.margin_pct >= minPct && f.volume >= minVol && f.profit_hour >= minProfit)
+      .sort((a, b) => {
+        const va = a[sortCol] ?? 0;
+        const vb = b[sortCol] ?? 0;
+        return sortAsc ? va - vb : vb - va;
+      });
   }
 
-  // --- Render ---
   function render() {
     if (!rawData) return;
     const all    = calcFlips(rawData);
@@ -299,53 +308,54 @@
     document.getElementById('count-info').textContent =
       `Mostrando ${result.length} flips de ${all.length} itens`;
 
-    const table    = document.getElementById('table');
+    const grid     = document.getElementById('cards');
     const emptyMsg = document.getElementById('empty-msg');
-    const tbody    = document.getElementById('tbody');
 
     if (result.length === 0) {
-      table.style.display    = 'none';
+      grid.innerHTML     = '';
       emptyMsg.style.display = 'block';
       return;
     }
-
-    table.style.display    = '';
     emptyMsg.style.display = 'none';
 
-    tbody.innerHTML = result.map((f, i) => {
-      const mClass = f.margin_pct >= 5 ? 'pos' : f.margin_pct >= 2 ? 'warn' : 'neg';
-      const pClass = f.profit_hour >= 0 ? 'pos' : 'neg';
+    const mClass = (pct) => pct >= 5 ? 'pos' : pct >= 2 ? 'warn' : 'neg';
+    const pClass = (v)   => v >= 0 ? 'pos' : 'neg';
 
-      return `<tr>
-        <td class="neu">${i + 1}</td>
-        <td class="name" title="${f.id}">${f.name}</td>
-        <td>${fmt(f.buy_price)}</td>
-        <td>${fmt(f.sell_price)}</td>
-        <td class="${f.margin_coins >= 0 ? 'pos' : 'neg'}">${fmt(f.margin_coins)}</td>
-        <td class="${mClass}">${fmtPct(f.margin_pct)}</td>
-        <td class="neu">${fmt(f.volume)}</td>
-        <td class="neu">${fmt(f.sell_volume)}</td>
-        <td class="${pClass}">${fmt(f.profit_hour)}</td>
-      </tr>`;
-    }).join('');
+    grid.innerHTML = result.map(f => `
+      <div class="card">
+        <img
+          class="card-img"
+          src="${IMG_BASE}${encodeURIComponent(f.id)}"
+          alt="${f.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        />
+        <div class="card-img-placeholder" style="display:none">🧪</div>
 
-    // Sort arrows
-    document.querySelectorAll('thead th[data-col]').forEach(th => {
-      th.classList.remove('sorted');
-      const old = th.querySelector('.arrow');
-      if (old) old.remove();
-      if (th.dataset.col === sortCol) {
-        th.classList.add('sorted');
-        th.insertAdjacentHTML('beforeend', `<span class="arrow">${sortAsc ? '▲' : '▼'}</span>`);
-      }
-    });
+        <div class="card-name">${f.name}</div>
+        <div class="card-divider"></div>
+
+        <div class="card-row"><span>Buy Price:</span><span>${fmtFull(f.buy_price)} coins</span></div>
+        <div class="card-row"><span>Sell Price:</span><span>${fmtFull(f.sell_price)} coins</span></div>
+        <div class="card-row"><span>Supply:</span><span>${fmtFull(f.supply)}</span></div>
+        <div class="card-row"><span>Demand:</span><span>${fmtFull(f.demand)}</span></div>
+        <div class="card-row"><span>Instabuys:</span><span>${fmtFull(f.instabuys)}</span></div>
+        <div class="card-row"><span>Instasells:</span><span>${fmtFull(f.instasells)}</span></div>
+
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span>Margem:</span>
+          <span class="${mClass(f.margin_pct)}">${fmtPct(f.margin_pct)}</span>
+        </div>
+        <div class="card-profit ${pClass(f.profit_hour)}">
+          Lucro/h: ${fmt(f.profit_hour)} coins
+        </div>
+      </div>
+    `).join('');
   }
 
-  // --- Load ---
   async function load() {
     hideError();
     document.getElementById('btn-refresh').disabled = true;
-
     try {
       rawData = await fetchData();
       document.getElementById('loading').style.display = 'none';
@@ -359,6 +369,20 @@
     }
   }
 
+  function scheduleRefresh() {
+    if (refreshTimeout) clearTimeout(refreshTimeout);
+    if (timerInterval)  clearInterval(timerInterval);
+    nextAt = Date.now() + REFRESH_SEC * 1000;
+    timerInterval = setInterval(() => {
+      const s = Math.max(0, Math.round((nextAt - Date.now()) / 1000));
+      document.getElementById('timer-info').textContent = `Próxima atualização em ${s}s`;
+    }, 1000);
+    refreshTimeout = setTimeout(() => {
+      clearInterval(timerInterval);
+      load();
+    }, REFRESH_SEC * 1000);
+  }
+
   function hideError() {
     document.getElementById('error-box').style.display = 'none';
   }
@@ -370,24 +394,6 @@
     console.error('[SkyFlip]', msg);
   }
 
-  function scheduleRefresh() {
-    if (refreshTimeout) clearTimeout(refreshTimeout);
-    if (timerInterval)  clearInterval(timerInterval);
-
-    nextAt = Date.now() + REFRESH_SEC * 1000;
-
-    timerInterval = setInterval(() => {
-      const s = Math.max(0, Math.round((nextAt - Date.now()) / 1000));
-      document.getElementById('timer-info').textContent = `Próxima atualização em ${s}s`;
-    }, 1000);
-
-    refreshTimeout = setTimeout(() => {
-      clearInterval(timerInterval);
-      load();
-    }, REFRESH_SEC * 1000);
-  }
-
-  // --- Events ---
   document.getElementById('btn-apply').addEventListener('click', render);
   document.getElementById('btn-refresh').addEventListener('click', load);
   document.getElementById('sort-key').addEventListener('change', e => {
@@ -396,16 +402,6 @@
     render();
   });
 
-  document.querySelectorAll('thead th[data-col]').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.col;
-      if (col === 'name') return;
-      sortCol === col ? (sortAsc = !sortAsc) : (sortCol = col, sortAsc = false);
-      render();
-    });
-  });
-
-  // Iniciar
   load();
 </script>
 </body>
