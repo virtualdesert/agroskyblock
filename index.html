@@ -356,6 +356,17 @@
     }
   }
 
+  function hideError() {
+    document.getElementById('error-box').style.display = 'none';
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('error-box');
+    box.textContent = msg;
+    box.style.display = 'block';
+    console.error('[SkyFlip]', msg);
+  }
+
   function scheduleRefresh() {
     if (refreshTimeout) clearTimeout(refreshTimeout);
     if (timerInterval)  clearInterval(timerInterval);
