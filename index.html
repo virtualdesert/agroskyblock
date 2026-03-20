@@ -248,10 +248,16 @@
   <label>Lucro mín. (coins):</label>
   <input type="number" id="filter-profit" value="1000" min="0" step="500" style="width:120px" />
 
+  <div class="capital-row" style="border-color:#3a3a1a;background:#2a2a10">
+    <label style="color:#fbbf24">💸 Lucro mín./flip:</label>
+    <input type="number" id="filter-flip-profit" value="" placeholder="Sem limite" min="0" step="1000" style="background:#2e2e10!important;border-color:#3a3a1a!important;color:#fbbf24!important;width:130px!important" />
+  </div>
+
   <label>Ordenar por:</label>
   <select id="sort-key" style="width:165px">
     <option value="profit_hour">Lucro/hora</option>
     <option value="real_profit_hour">Lucro real/hora (capital)</option>
+    <option value="flip_profit">Lucro por flip (capital)</option>
     <option value="margin_pct">Margem %</option>
     <option value="margin_coins">Margem (coins)</option>
     <option value="roi_pct">ROI %</option>
@@ -423,6 +429,11 @@
         ? marginCoins * Math.min(buyVolH, sellVolH, capitalUnits)
         : profitHour;
 
+      // ---- Lucro por flip (operação única com capital disponível) ----
+      // Quanto você lucra comprando AGORA tudo que consegue com seu capital
+      const flipUnits  = isFinite(capitalVal) && capitalVal > 0 ? Math.floor(capitalVal / buyPrice) : null;
+      const flipProfit = flipUnits !== null && flipUnits > 0 ? flipUnits * marginCoins : null;
+
       // ---- Pump detector ----
       // Compara spread atual com esperado: spread normal < 5%
       const spread = (sellPrice - buyPrice) / buyPrice;
@@ -447,6 +458,8 @@
         supply: qs.sellVolume, demand: qs.buyVolume,
         profit_hour: profitHour,
         real_profit_hour: realProfitHour,
+        flip_units: flipUnits,
+        flip_profit: flipProfit,
         exit_minutes: exitMinutes, fill_minutes: fillMinutes,
         is_pump: isPump,
         risk_score: riskScore, risk_label: riskLabel, risk_class: riskClass,
@@ -455,19 +468,24 @@
   }
 
   function process(flips) {
-    const minPct    = parseFloat(document.getElementById('filter-margin').value)  || 0;
-    const minVol    = parseFloat(document.getElementById('filter-volume').value)   || 0;
-    const minProfit = parseFloat(document.getElementById('filter-profit').value)   || 0;
-    const capital   = parseFloat(document.getElementById('filter-capital').value)  || Infinity;
-    const hardFilter = document.getElementById('filter-capital-hard').checked;
+    const minPct        = parseFloat(document.getElementById('filter-margin').value)       || 0;
+    const minVol        = parseFloat(document.getElementById('filter-volume').value)        || 0;
+    const minProfit     = parseFloat(document.getElementById('filter-profit').value)        || 0;
+    const minFlipProfit = parseFloat(document.getElementById('filter-flip-profit').value)   || 0;
+    const capital       = parseFloat(document.getElementById('filter-capital').value)       || Infinity;
+    const hardFilter    = document.getElementById('filter-capital-hard').checked;
 
     return flips
       .filter(f => {
-        if (f.margin_pct < minPct)  return false;
-        if (f.buy_vol_h  < minVol)  return false;
-        // usa real_profit_hour quando capital definido, profit_hour caso contrário
+        if (f.margin_pct < minPct) return false;
+        if (f.buy_vol_h  < minVol) return false;
+        // filtro de lucro/hora usa real quando capital definido
         const profCheck = isFinite(capital) ? f.real_profit_hour : f.profit_hour;
-        if (profCheck < minProfit)  return false;
+        if (profCheck < minProfit) return false;
+        // filtro de lucro por flip (só aplica quando capital definido e filtro preenchido)
+        if (minFlipProfit > 0 && isFinite(capital)) {
+          if (f.flip_profit === null || f.flip_profit < minFlipProfit) return false;
+        }
         if (activeCat !== 'all' && f.category !== activeCat) return false;
         return true;
       })
@@ -560,7 +578,10 @@
         <div class="card-divider"></div>
         <div class="card-profit ${pClass(f.profit_hour)}">Lucro/h: ${fmt(f.profit_hour)} coins</div>
         ${(isFinite(parseFloat(document.getElementById('filter-capital').value) || Infinity) && Math.abs(f.real_profit_hour - f.profit_hour) > 1)
-          ? `<div class="card-real-profit">⚡ Capital real: ${fmt(f.real_profit_hour)} coins/h</div>`
+          ? `<div class="card-real-profit">⚡ Real/h: ${fmt(f.real_profit_hour)} coins</div>`
+          : ''}
+        ${f.flip_profit !== null
+          ? `<div class="card-real-profit" style="color:#a78bfa">💸 Flip: ${f.flip_units}x → ${fmt(f.flip_profit)} coins</div>`
           : ''}
       </div>`;
     }).join('');
@@ -903,6 +924,7 @@
   // capital filter re-renders immediately on change
   document.getElementById('filter-capital').addEventListener('input', render);
   document.getElementById('filter-capital-hard').addEventListener('change', render);
+  document.getElementById('filter-flip-profit').addEventListener('input', render);
 
   // ---- Leaderboard ----
   const LB_API = '/api/leaderboard';
