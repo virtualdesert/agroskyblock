@@ -1,0 +1,9 @@
+{
+  "name": "skyflip",
+  "version": "1.0.0",
+  "description": "Hypixel Skyblock Bazaar Flipper",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyFlip - Bazaar Flipper</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 14px;
+    }
+
+    header {
+      background: #111;
+      padding: 12px 20px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    header h1 { font-size: 20px; color: #4fc3f7; }
+
+    .controls {
+      background: #222;
+      padding: 10px 20px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .controls label { color: #aaa; font-size: 13px; }
+
+    .controls input, .controls select {
+      background: #333;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      width: 110px;
+    }
+
+    .controls button {
+      background: #4fc3f7;
+      color: #111;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .controls button:hover { background: #81d4fa; }
+    .controls button:disabled { background: #444; color: #777; cursor: not-allowed; }
+
+    .status-bar {
+      padding: 5px 20px;
+      background: #1e1e1e;
+      font-size: 12px;
+      color: #666;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      gap: 24px;
+    }
+
+    .status-bar span { color: #4fc3f7; }
+
+    .container { padding: 0 20px 20px; }
+
+    #error-box {
+      background: #2d1010;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      padding: 10px 20px;
+      margin: 12px 20px 0;
+      border-radius: 4px;
+      display: none;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 60px;
+      color: #555;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    thead th {
+      background: #252525;
+      padding: 8px 12px;
+      text-align: left;
+      color: #888;
+      font-weight: 600;
+      border-bottom: 2px solid #333;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    thead th:hover { color: #ccc; }
+    thead th.sorted { color: #4fc3f7; }
+    .arrow { margin-left: 4px; font-size: 10px; }
+
+    tbody tr { border-bottom: 1px solid #242424; }
+    tbody tr:hover { background: #242424; }
+
+    td { padding: 7px 12px; }
+
+    td.name {
+      font-weight: 600;
+      color: #e0e0e0;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pos { color: #66bb6a; }
+    .neg { color: #ef5350; }
+    .neu { color: #888; }
+    .warn { color: #ffa726; }
+
+    #empty-msg {
+      text-align: center;
+      padding: 50px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>SkyFlip</h1>
+</header>
+
+<div class="controls">
+  <label>Margem mín. (%):</label>
+  <input type="number" id="filter-margin" value="1" min="0" step="0.5" />
+
+  <label>Vol. mín. /hora:</label>
+  <input type="number" id="filter-volume" value="10" min="0" />
+
+  <label>Lucro mín. (coins):</label>
+  <input type="number" id="filter-profit" value="1000" min="0" step="500" style="width:130px" />
+
+  <label>Ordenar por:</label>
+  <select id="sort-key" style="width:140px">
+    <option value="profit_hour">Lucro/hora</option>
+    <option value="margin_pct">Margem %</option>
+    <option value="margin_coins">Margem (coins)</option>
+    <option value="volume">Vol. compra/h</option>
+    <option value="buy_price">Preço compra</option>
+  </select>
+
+  <button id="btn-apply">Aplicar</button>
+  <button id="btn-refresh" disabled>Atualizar agora</button>
+</div>
+
+<div class="status-bar">
+  <div id="count-info">Carregando...</div>
+  <div id="timer-info"></div>
+</div>
+
+<div id="error-box"></div>
+<div id="loading">Buscando dados do Bazaar...</div>
+
+<div class="container">
+  <table id="table" style="display:none">
+    <thead>
+      <tr>
+        <th style="width:36px">#</th>
+        <th data-col="name">Item</th>
+        <th data-col="buy_price">Comprar por</th>
+        <th data-col="sell_price">Vender por</th>
+        <th data-col="margin_coins">Margem</th>
+        <th data-col="margin_pct">Margem %</th>
+        <th data-col="volume">Vol. compra/h</th>
+        <th data-col="sell_volume">Vol. venda/h</th>
+        <th data-col="profit_hour">Lucro/hora</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="empty-msg" style="display:none">Nenhum flip encontrado com esses filtros.</div>
+</div>
+
+<script>
+  const PROXY = '/api/bazaar';
+  const REFRESH_SEC = 60;
+
+  let rawData = null;
+  let sortCol = 'profit_hour';
+  let sortAsc  = false;
+  let timerInterval = null;
+  let refreshTimeout = null;
+  let nextAt = 0;
+
+  // --- Format ---
+  function fmt(n) {
+    if (n == null || isNaN(n)) return '-';
+    const a = Math.abs(n);
+    if (a >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+    if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+    if (a >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    return n.toFixed(0);
+  }
+
+  function fmtPct(n) {
+    return isNaN(n) ? '-' : n.toFixed(2) + '%';
+  }
+
+  // --- API ---
+  async function fetchData() {
+    const res = await fetch(PROXY);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.cause || 'API error');
+    return json;
+  }
+
+  // --- Calc flips ---
+  function calcFlips(data) {
+    const TAX = 0.9875; // 1.25% de taxa do Hypixel
+    const flips = [];
+
+    for (const [id, p] of Object.entries(data.products)) {
+      const qs = p.quick_status;
+      if (!qs) continue;
+
+      const buyPrice  = qs.buyPrice;
+      const sellPrice = qs.sellPrice;
+      if (!buyPrice || !sellPrice || buyPrice <= 0 || sellPrice <= 0) continue;
+
+      const effectiveSell = sellPrice * TAX;
+      const marginCoins   = effectiveSell - buyPrice;
+      const marginPct     = (marginCoins / buyPrice) * 100;
+
+      const buyVol  = qs.buyMovingWeek  / 7 / 24;
+      const sellVol = qs.sellMovingWeek / 7 / 24;
+
+      const profitHour = marginCoins * Math.min(buyVol, sellVol);
+
+      flips.push({
+        id,
+        name: id.replace(/_/g, ' '),
+        buy_price:    buyPrice,
+        sell_price:   sellPrice,
+        margin_coins: marginCoins,
+        margin_pct:   marginPct,
+        volume:       buyVol,
+        sell_volume:  sellVol,
+        profit_hour:  profitHour,
+      });
+    }
+    return flips;
+  }
+
+  // --- Filter & sort ---
+  function process(flips) {
+    const minPct    = parseFloat(document.getElementById('filter-margin').value) || 0;
+    const minVol    = parseFloat(document.getElementById('filter-volume').value) || 0;
+    const minProfit = parseFloat(document.getElementById('filter-profit').value) || 0;
+
+    const filtered = flips.filter(f =>
+      f.margin_pct     >= minPct &&
+      f.volume         >= minVol &&
+      f.profit_hour    >= minProfit
+    );
+
+    return filtered.sort((a, b) => {
+      const va = a[sortCol] ?? 0;
+      const vb = b[sortCol] ?? 0;
+      return sortAsc ? va - vb : vb - va;
+    });
+  }
+
+  // --- Render ---
+  function render() {
+    if (!rawData) return;
+    const all    = calcFlips(rawData);
+    const result = process(all);
+
+    document.getElementById('count-info').textContent =
+      `Mostrando ${result.length} flips de ${all.length} itens`;
+
+    const table    = document.getElementById('table');
+    const emptyMsg = document.getElementById('empty-msg');
+    const tbody    = document.getElementById('tbody');
+
+    if (result.length === 0) {
+      table.style.display    = 'none';
+      emptyMsg.style.display = 'block';
+      return;
+    }
+
+    table.style.display    = '';
+    emptyMsg.style.display = 'none';
+
+    tbody.innerHTML = result.map((f, i) => {
+      const mClass = f.margin_pct >= 5 ? 'pos' : f.margin_pct >= 2 ? 'warn' : 'neg';
+      const pClass = f.profit_hour >= 0 ? 'pos' : 'neg';
+
+      return `<tr>
+        <td class="neu">${i + 1}</td>
+        <td class="name" title="${f.id}">${f.name}</td>
+        <td>${fmt(f.buy_price)}</td>
+        <td>${fmt(f.sell_price)}</td>
+        <td class="${f.margin_coins >= 0 ? 'pos' : 'neg'}">${fmt(f.margin_coins)}</td>
+        <td class="${mClass}">${fmtPct(f.margin_pct)}</td>
+        <td class="neu">${fmt(f.volume)}</td>
+        <td class="neu">${fmt(f.sell_volume)}</td>
+        <td class="${pClass}">${fmt(f.profit_hour)}</td>
+      </tr>`;
+    }).join('');
+
+    // Sort arrows
+    document.querySelectorAll('thead th[data-col]').forEach(th => {
+      th.classList.remove('sorted');
+      const old = th.querySelector('.arrow');
+      if (old) old.remove();
+      if (th.dataset.col === sortCol) {
+        th.classList.add('sorted');
+        th.insertAdjacentHTML('beforeend', `<span class="arrow">${sortAsc ? '▲' : '▼'}</span>`);
+      }
+    });
+  }
+
+  // --- Load ---
+  async function load() {
+    hideError();
+    document.getElementById('btn-refresh').disabled = true;
+
+    try {
+      rawData = await fetchData();
+      document.getElementById('loading').style.display = 'none';
+      render();
+      scheduleRefresh();
+    } catch (e) {
+      showError('Erro: ' + e.message);
+      document.getElementById('loading').style.display = 'none';
+    } finally {
+      document.getElementById('btn-refresh').disabled = false;
+    }
+  }
+
+  function scheduleRefresh() {
+    if (refreshTimeout) clearTimeout(refreshTimeout);
+    if (timerInterval)  clearInterval(timerInterval);
+
+    nextAt = Date.now() + REFRESH_SEC * 1000;
+
+    timerInterval = setInterval(() => {
+      const s = Math.max(0, Math.round((nextAt - Date.now()) / 1000));
+      document.getElementById('timer-info').textContent = `Próxima atualização em ${s}s`;
+    }, 1000);
+
+    refreshTimeout = setTimeout(() => {
+      clearInterval(timerInterval);
+      load();
+    }, REFRESH_SEC * 1000);
+  }
+
+  // --- Events ---
+  document.getElementById('btn-apply').addEventListener('click', render);
+  document.getElementById('btn-refresh').addEventListener('click', load);
+  document.getElementById('sort-key').addEventListener('change', e => {
+    sortCol = e.target.value;
+    sortAsc = false;
+    render();
+  });
+
+  document.querySelectorAll('thead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (col === 'name') return;
+      sortCol === col ? (sortAsc = !sortAsc) : (sortCol = col, sortAsc = false);
+      render();
+    });
+  });
+
+  // Iniciar
+  load();
+</script>
+</body>
+</html>
