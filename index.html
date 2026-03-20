@@ -121,7 +121,42 @@
     .exit-fast { color: #6ee7b7; } .exit-med { color: #fbbf24; } .exit-slow { color: #fca5a5; }
 
     .card-profit { font-size: 13px; font-weight: 700; margin-top: 3px; }
+    .card-real-profit { font-size: 12px; font-weight: 600; color: #fbbf24; }
     .pos{color:#66bb6a} .neg{color:#ef5350} .warn{color:#ffa726} .neu{color:#888}
+
+    /* Leaderboard modal */
+    .lb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:200; align-items:center; justify-content:center; }
+    .lb-overlay.open { display:flex; }
+    .lb-panel { background:#1e1e1e; border:1px solid #333; border-radius:10px; width:520px; max-width:95vw; max-height:88vh; overflow-y:auto; display:flex; flex-direction:column; }
+    .lb-header { padding:16px 20px; border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#1e1e1e; z-index:1; }
+    .lb-header h2 { font-size:16px; color:#fff; }
+    .lb-close { background:none; border:none; color:#aaa; font-size:22px; cursor:pointer; }
+    .lb-close:hover { color:#fff; }
+    .lb-body { padding:16px 20px; flex:1; display:flex; flex-direction:column; gap:12px; }
+    .lb-section-title { font-size:12px; color:#666; font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; }
+    .lb-row { display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:6px; font-size:13px; background:#252525; border:1px solid #2a2a2a; }
+    .lb-row.lb-you { background:#1a2a1a; border-color:#2d5a2d; }
+    .lb-rank { width:24px; font-weight:800; color:#666; text-align:center; flex-shrink:0; }
+    .lb-rank.gold   { color:#fbbf24; }
+    .lb-rank.silver { color:#b0b0b0; }
+    .lb-rank.bronze { color:#cd7f32; }
+    .lb-name { flex:1; font-weight:600; color:#fff; }
+    .lb-profit { color:#66bb6a; font-weight:700; font-size:12px; }
+    .lb-flips  { color:#666; font-size:11px; }
+    .lb-form { display:flex; flex-direction:column; gap:10px; }
+    .lb-input { background:#2e2e2e; border:1px solid #444; color:#fff; padding:9px 12px; border-radius:5px; font-size:14px; width:100%; }
+    .lb-input:focus { outline:none; border-color:#4fc3f7; }
+    .lb-captcha { background:#252525; border:1px solid #333; border-radius:6px; padding:12px; }
+    .lb-captcha-q { font-size:18px; font-weight:700; color:#4fc3f7; text-align:center; margin-bottom:8px; }
+    .lb-btn { background:#4fc3f7; color:#111; border:none; padding:9px 20px; border-radius:5px; font-weight:700; font-size:13px; cursor:pointer; width:100%; }
+    .lb-btn:hover { background:#81d4fa; }
+    .lb-btn:disabled { background:#444; color:#777; cursor:not-allowed; }
+    .lb-btn-sec { background:#333; color:#e0e0e0; border:1px solid #555; padding:8px 20px; border-radius:5px; font-size:13px; cursor:pointer; width:100%; }
+    .lb-btn-sec:hover { background:#444; }
+    .lb-msg { font-size:12px; text-align:center; padding:6px; border-radius:4px; }
+    .lb-msg.ok  { background:#1b4332; color:#6ee7b7; }
+    .lb-msg.err { background:#2d1010; color:#fca5a5; }
+    .lb-nick-display { font-size:12px; color:#6ee7b7; margin-left:8px; font-weight:600; }
 
     #empty-msg { text-align: center; padding: 50px; color: #444; }
 
@@ -190,12 +225,18 @@
 
 <header>
   <h1>SkyFlip</h1>
+  <span class="lb-nick-display" id="header-nick"></span>
+  <button class="btn-secondary" id="btn-leaderboard" style="margin-left:auto">🏆 Ranking</button>
 </header>
 
 <div class="controls">
   <div class="capital-row">
     <label>💰 Capital:</label>
     <input type="number" id="filter-capital" value="" placeholder="Sem limite" min="0" step="100000" />
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap">
+      <input type="checkbox" id="filter-capital-hard" style="width:auto;accent-color:#6ee7b7" />
+      <span style="font-size:11px;color:#6ee7b7">Ocultar inacessíveis</span>
+    </label>
   </div>
 
   <label>Margem mín. (%):</label>
@@ -208,8 +249,9 @@
   <input type="number" id="filter-profit" value="1000" min="0" step="500" style="width:120px" />
 
   <label>Ordenar por:</label>
-  <select id="sort-key" style="width:155px">
+  <select id="sort-key" style="width:165px">
     <option value="profit_hour">Lucro/hora</option>
+    <option value="real_profit_hour">Lucro real/hora (capital)</option>
     <option value="margin_pct">Margem %</option>
     <option value="margin_coins">Margem (coins)</option>
     <option value="roi_pct">ROI %</option>
@@ -275,6 +317,19 @@
       </div>
       <button class="btn-complete" id="btn-complete-all">✅ Marcar todos como vendidos</button>
       <button class="btn-danger" id="btn-clear-cart">🗑 Limpar ativos</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div class="lb-overlay" id="lb-overlay">
+  <div class="lb-panel">
+    <div class="lb-header">
+      <h2>🏆 Ranking de Flippers</h2>
+      <button class="lb-close" id="lb-close">✕</button>
+    </div>
+    <div class="lb-body" id="lb-body">
+      <div style="text-align:center;color:#555;padding:40px 0">Carregando...</div>
     </div>
   </div>
 </div>
@@ -361,6 +416,13 @@
 
       const profitHour = marginCoins * Math.min(buyVolH, sellVolH);
 
+      // ---- Lucro real por capital ----
+      const capitalVal   = parseFloat(document.getElementById('filter-capital').value) || Infinity;
+      const capitalUnits = isFinite(capitalVal) ? Math.floor(capitalVal / buyPrice) : Infinity;
+      const realProfitHour = isFinite(capitalUnits) && capitalUnits >= 0
+        ? marginCoins * Math.min(buyVolH, sellVolH, capitalUnits)
+        : profitHour;
+
       // ---- Pump detector ----
       // Compara spread atual com esperado: spread normal < 5%
       const spread = (sellPrice - buyPrice) / buyPrice;
@@ -384,6 +446,7 @@
         buy_vol_d: buyVolD, sell_vol_d: sellVolD,
         supply: qs.sellVolume, demand: qs.buyVolume,
         profit_hour: profitHour,
+        real_profit_hour: realProfitHour,
         exit_minutes: exitMinutes, fill_minutes: fillMinutes,
         is_pump: isPump,
         risk_score: riskScore, risk_label: riskLabel, risk_class: riskClass,
@@ -396,12 +459,15 @@
     const minVol    = parseFloat(document.getElementById('filter-volume').value)   || 0;
     const minProfit = parseFloat(document.getElementById('filter-profit').value)   || 0;
     const capital   = parseFloat(document.getElementById('filter-capital').value)  || Infinity;
+    const hardFilter = document.getElementById('filter-capital-hard').checked;
 
     return flips
       .filter(f => {
-        if (f.margin_pct  < minPct)    return false;
-        if (f.buy_vol_h   < minVol)    return false;
-        if (f.profit_hour < minProfit) return false;
+        if (f.margin_pct < minPct)  return false;
+        if (f.buy_vol_h  < minVol)  return false;
+        // usa real_profit_hour quando capital definido, profit_hour caso contrário
+        const profCheck = isFinite(capital) ? f.real_profit_hour : f.profit_hour;
+        if (profCheck < minProfit)  return false;
         if (activeCat !== 'all' && f.category !== activeCat) return false;
         return true;
       })
@@ -411,7 +477,8 @@
           return sortAsc ? vb - va : va - vb;
         return sortAsc ? va - vb : vb - va;
       })
-      .map(f => ({ ...f, cant_afford: capital < f.buy_price }));
+      .map(f => ({ ...f, cant_afford: isFinite(capital) && capital < f.buy_price }))
+      .filter(f => !hardFilter || !f.cant_afford);
   }
 
   // ---- Render cards ----
@@ -492,6 +559,9 @@
 
         <div class="card-divider"></div>
         <div class="card-profit ${pClass(f.profit_hour)}">Lucro/h: ${fmt(f.profit_hour)} coins</div>
+        ${(isFinite(parseFloat(document.getElementById('filter-capital').value) || Infinity) && Math.abs(f.real_profit_hour - f.profit_hour) > 1)
+          ? `<div class="card-real-profit">⚡ Capital real: ${fmt(f.real_profit_hour)} coins/h</div>`
+          : ''}
       </div>`;
     }).join('');
 
@@ -832,7 +902,202 @@
 
   // capital filter re-renders immediately on change
   document.getElementById('filter-capital').addEventListener('input', render);
+  document.getElementById('filter-capital-hard').addEventListener('change', render);
 
+  // ---- Leaderboard ----
+  const LB_API = '/api/leaderboard';
+  let nickname = localStorage.getItem('skyflip_nickname') || null;
+  let lbChallenge = null; // { question, token }
+
+  function updateHeaderNick() {
+    const el = document.getElementById('header-nick');
+    el.textContent = nickname ? `👤 ${nickname}` : '';
+  }
+
+  function openLeaderboard() {
+    document.getElementById('lb-overlay').classList.add('open');
+    renderLbBody();
+  }
+  function closeLeaderboard() {
+    document.getElementById('lb-overlay').classList.remove('open');
+  }
+
+  async function renderLbBody() {
+    const body = document.getElementById('lb-body');
+    body.innerHTML = '<div style="text-align:center;color:#555;padding:40px 0">Carregando...</div>';
+
+    // Fetch leaderboard data in parallel with challenge (if no nickname)
+    const [lbData, challengeData] = await Promise.all([
+      fetch(LB_API).then(r => r.json()).catch(() => null),
+      !nickname ? fetch(LB_API + '?action=challenge').then(r => r.json()).catch(() => null) : Promise.resolve(null),
+    ]);
+
+    if (challengeData) lbChallenge = challengeData;
+
+    const entries = lbData && lbData.success ? lbData.entries : [];
+    const myTotal = history.reduce((s, h) => s + h.profit, 0);
+
+    let html = '';
+
+    // Leaderboard table
+    html += `<div class="lb-section-title">Top Flippers</div>`;
+    if (!entries.length) {
+      html += `<div style="color:#555;text-align:center;padding:20px 0">Nenhum dado ainda. Seja o primeiro!</div>`;
+    } else {
+      html += entries.map((e, i) => {
+        const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+        const isYou = nickname && e.nickname === nickname;
+        return `<div class="lb-row${isYou ? ' lb-you' : ''}">
+          <span class="lb-rank ${rankClass}">${e.rank}</span>
+          <span class="lb-name">${escHtml(e.nickname)}${isYou ? ' <span style="color:#6ee7b7;font-size:10px">(você)</span>' : ''}</span>
+          <span class="lb-flips">${e.flips}x</span>
+          <span class="lb-profit">${fmt(e.totalProfit)} coins</span>
+        </div>`;
+      }).join('');
+    }
+
+    // User section
+    html += `<div style="margin-top:8px">`;
+    if (!nickname) {
+      // Registration form
+      html += `<div class="lb-section-title">Criar perfil</div>
+      <div class="lb-form" id="lb-reg-form">
+        <input class="lb-input" id="lb-nick-input" type="text" placeholder="Seu nickname (3-20 chars, sem espaços)" maxlength="20" />
+        <div class="lb-captcha">
+          <div class="lb-captcha-q" id="lb-captcha-q">${lbChallenge ? lbChallenge.question : '...'}</div>
+          <input class="lb-input" id="lb-captcha-ans" type="number" placeholder="Resposta" style="text-align:center;font-size:18px;font-weight:700" />
+        </div>
+        <div class="lb-msg" id="lb-msg" style="display:none"></div>
+        <button class="lb-btn" id="lb-reg-btn">Criar perfil e enviar lucro</button>
+        <div style="font-size:11px;color:#555;text-align:center">
+          Seu lucro histórico local (${fmt(myTotal)} coins) será enviado ao ranking.
+        </div>
+      </div>`;
+    } else {
+      // Sync form for existing user
+      html += `<div class="lb-section-title">Meu perfil</div>
+      <div class="lb-form" id="lb-sync-form">
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#252525;border:1px solid #333;border-radius:6px;padding:10px 12px">
+          <span style="color:#fff;font-weight:700">👤 ${escHtml(nickname)}</span>
+          <span class="lb-profit">${fmt(myTotal)} coins</span>
+        </div>
+        <div class="lb-msg" id="lb-msg" style="display:none"></div>
+        <button class="lb-btn" id="lb-sync-btn">🔄 Sincronizar meu lucro</button>
+        <button class="lb-btn-sec" id="lb-change-nick-btn" style="margin-top:4px">Trocar nickname</button>
+      </div>`;
+    }
+    html += `</div>`;
+
+    body.innerHTML = html;
+
+    // Wire events
+    if (!nickname) {
+      document.getElementById('lb-reg-btn').addEventListener('click', handleLbRegister);
+    } else {
+      document.getElementById('lb-sync-btn').addEventListener('click', handleLbSync);
+      document.getElementById('lb-change-nick-btn').addEventListener('click', () => {
+        nickname = null;
+        localStorage.removeItem('skyflip_nickname');
+        updateHeaderNick();
+        renderLbBody();
+      });
+    }
+  }
+
+  function escHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function showLbMsg(msg, isOk) {
+    const el = document.getElementById('lb-msg');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'lb-msg ' + (isOk ? 'ok' : 'err');
+    el.style.display = 'block';
+  }
+
+  async function handleLbRegister() {
+    const nick    = (document.getElementById('lb-nick-input').value || '').trim();
+    const ans     = (document.getElementById('lb-captcha-ans').value || '').trim();
+    const btn     = document.getElementById('lb-reg-btn');
+
+    if (!nick) { showLbMsg('Digite um nickname.', false); return; }
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(nick)) {
+      showLbMsg('Nickname deve ter 3-20 caracteres (letras, números, _).', false); return;
+    }
+    if (!ans) { showLbMsg('Responda o CAPTCHA.', false); return; }
+    if (!lbChallenge) { showLbMsg('Carregando CAPTCHA... tente novamente.', false); return; }
+
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    const totalProfit = history.reduce((s, h) => s + h.profit, 0);
+    try {
+      const res = await fetch(LB_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname: nick,
+          profit: totalProfit,
+          flips: history.length,
+          captchaAnswer: ans,
+          captchaToken: lbChallenge.token,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        nickname = nick;
+        localStorage.setItem('skyflip_nickname', nick);
+        updateHeaderNick();
+        showLbMsg(`Perfil criado! Você está em #${data.rank} 🎉`, true);
+        setTimeout(renderLbBody, 1500);
+      } else {
+        showLbMsg(data.cause || 'Erro ao criar perfil.', false);
+        btn.disabled = false; btn.textContent = 'Criar perfil e enviar lucro';
+        // refresh captcha
+        const c = await fetch(LB_API + '?action=challenge').then(r => r.json()).catch(() => null);
+        if (c) { lbChallenge = c; const q = document.getElementById('lb-captcha-q'); if(q) q.textContent = c.question; }
+      }
+    } catch(e) {
+      showLbMsg('Erro de rede: ' + e.message, false);
+      btn.disabled = false; btn.textContent = 'Criar perfil e enviar lucro';
+    }
+  }
+
+  async function handleLbSync() {
+    const btn = document.getElementById('lb-sync-btn');
+    btn.disabled = true; btn.textContent = 'Sincronizando...';
+    const totalProfit = history.reduce((s, h) => s + h.profit, 0);
+    try {
+      const res = await fetch(LB_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname,
+          profit: totalProfit,
+          flips: history.length,
+          syncMode: true,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showLbMsg(`Sincronizado! Você está em #${data.rank} 🎉`, true);
+        setTimeout(renderLbBody, 1200);
+      } else {
+        showLbMsg(data.cause || 'Erro ao sincronizar.', false);
+        btn.disabled = false; btn.textContent = '🔄 Sincronizar meu lucro';
+      }
+    } catch(e) {
+      showLbMsg('Erro de rede: ' + e.message, false);
+      btn.disabled = false; btn.textContent = '🔄 Sincronizar meu lucro';
+    }
+  }
+
+  document.getElementById('btn-leaderboard').addEventListener('click', openLeaderboard);
+  document.getElementById('lb-close').addEventListener('click', closeLeaderboard);
+  document.getElementById('lb-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('lb-overlay')) closeLeaderboard();
+  });
+
+  updateHeaderNick();
   updateCartBadge();
   load();
 </script>
