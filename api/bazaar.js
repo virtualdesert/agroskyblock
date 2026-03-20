@@ -17,8 +17,8 @@ module.exports = function handler(req, res) {
     apiRes.on('end', () => {
       try {
         const json = JSON.parse(body);
-        res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
-        res.status(apiRes.statusCode).json(json);
+        res.setHeader('Cache-Control', 'no-store');
+        res.status(200).json(json);
       } catch (e) {
         res.status(500).json({ success: false, cause: 'JSON parse error: ' + e.message });
       }

@@ -240,13 +240,16 @@
       const qs = p.quick_status;
       if (!qs) continue;
 
-      const buyPrice  = qs.buyPrice;
-      const sellPrice = qs.sellPrice;
-      if (!buyPrice || !sellPrice || buyPrice <= 0 || sellPrice <= 0) continue;
+      // Na API Hypixel: sellPrice = menor sell order (você paga para instabuy)
+      //                 buyPrice  = maior buy order  (você recebe no instasell)
+      const instaBuyPrice  = qs.sellPrice;  // preço que você PAGA ao comprar
+      const instaSellPrice = qs.buyPrice;   // preço que você RECEBE ao vender
 
-      const effectiveSell = sellPrice * TAX;
-      const marginCoins   = effectiveSell - buyPrice;
-      const marginPct     = (marginCoins / buyPrice) * 100;
+      if (!instaBuyPrice || !instaSellPrice || instaBuyPrice <= 0 || instaSellPrice <= 0) continue;
+
+      const effectiveSell = instaSellPrice * TAX;
+      const marginCoins   = effectiveSell - instaBuyPrice;
+      const marginPct     = (marginCoins / instaBuyPrice) * 100;
 
       const buyVol  = qs.buyMovingWeek  / 7 / 24;
       const sellVol = qs.sellMovingWeek / 7 / 24;
@@ -256,8 +259,8 @@
       flips.push({
         id,
         name: id.replace(/_/g, ' '),
-        buy_price:    buyPrice,
-        sell_price:   sellPrice,
+        buy_price:    instaBuyPrice,
+        sell_price:   instaSellPrice,
         margin_coins: marginCoins,
         margin_pct:   marginPct,
         volume:       buyVol,
